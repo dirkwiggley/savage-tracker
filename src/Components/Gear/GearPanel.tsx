@@ -3,18 +3,46 @@ import MobileBox from "../MobileBox";
 import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
 import GearDisplay from "./GearDisplay";
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { CharDataType, GearType } from "../CharStore/CharData";
 import { AppContext } from "../AppContextProvider";
 import AddGearEffectDlg from "./AddGearEffectDlg";
 import UpPanel from "../UpPanel";
 import LockCharacterBtn from "../LockCharacterBtn";
+import NewGearNameDlg from "./NewGearNameDlg";
+
+const NAME_STEP = 0;
+const EFFECT_STEP = 1;
+const VALUE_STEP = 2;
+const UNKNOWN_STEP = 3;
+type stepType = typeof NAME_STEP | typeof EFFECT_STEP | typeof VALUE_STEP | typeof UNKNOWN_STEP; 
 
 const GearPanel = () => {
   const [char, setChar] = useContext(AppContext)!;
+  const [openNewGearNameDlg, setOpenNewGearNameDlg] = useState<boolean>(false);
   const [openAddGearEffectDlg, setOpenAddGearEffectDlg] = useState<boolean>(false);
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMsg, setSnackbarMsg] = useState<String | null>(null);
+  const [currentStep, setCurrentStep] = useState<stepType>(UNKNOWN_STEP);
+  const [gearName, setGearName] = useState<string | null>(null);
+
+  useEffect(() => {
+    switch (currentStep) {
+      case NAME_STEP:
+        setGearName(null);
+        setOpenNewGearNameDlg(true);
+        break;
+      case EFFECT_STEP:
+        setOpenAddGearEffectDlg(true);
+        break;
+      case VALUE_STEP:
+        break;
+      default:
+        setGearName(null);
+        return;
+    }
+
+  }, [currentStep]);
 
   const getNonMobile = () => {
     return (
@@ -26,10 +54,20 @@ const GearPanel = () => {
 
   const getMobile = () => {
     const handleClickAdd = () => {
+      setCurrentStep(NAME_STEP);
+    }
+
+    const handleCloseNewGearNameDlg = () => {
+      setOpenNewGearNameDlg(false);
+    }
+
+    const handleAddNewGearName = (gearName: string) => {
+      setGearName(gearName);
+      handleCloseNewGearNameDlg();
       setOpenAddGearEffectDlg(true);
     }
 
-    const handleCloseClickAdd = () => {
+    const handleCloseAddEffectDlg = () => {
       setOpenAddGearEffectDlg(false);
     }
 
@@ -138,7 +176,8 @@ const GearPanel = () => {
               <Typography variant="h4" fontWeight={900}>Gear</Typography>
             </Box>
 
-            <AddGearEffectDlg openDlg={openAddGearEffectDlg} closeDlg={handleCloseClickAdd} addGear={handleAddGear} />
+            <NewGearNameDlg openDlg={openNewGearNameDlg} closeDlg={handleCloseNewGearNameDlg} addName={handleAddNewGearName} />
+            <AddGearEffectDlg openDlg={openAddGearEffectDlg} closeDlg={handleCloseAddEffectDlg} addGear={handleAddGear} />
             {getGear()}
 
             {getAddGearBtn()}

@@ -5,6 +5,7 @@ import { grey } from "@mui/material/colors";
 import { allGearEffectTypes, GearEffectConfig, GearEffectType, GearType } from "../CharStore/CharData";
 import { AttributeNameType, allAttributeNames } from "../Attributes/AttribPanel";
 import { DiceNameType, allDiceNames } from "../Dice";
+import { EffectNameType } from "../Effects/Effects";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -24,8 +25,7 @@ type AddGearEffectDlgProps = {
 const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
   const {openDlg, closeDlg, addGear} = props;
   const [char, setChar] = useContext(AppContext)!;
-  const [gearName, setGearName] = useState<string>("");
-  const [gearEffects, setGearEffects] = useState<Array<GearEffectConfig> | null>(null);
+  const [gearEffects, setGearEffects] = useState<Array<GearEffectType> | null>(null);
   const [openAddEffectDlg, setOpenAddEffectDlg] = useState<boolean>(false);
 
   const effectButtons = useMemo(() => {
@@ -67,14 +67,12 @@ const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
   }
 
   const handleAddEffect = (effectType: GearEffectType) => {
-
+    const newEffects: Array<GearEffectType> = gearEffects ? [...gearEffects] : [];
+    newEffects.push(effectType);
+    setGearEffects(newEffects);
   }
 
-  const handleAddGearName = (gearName: string) => {
-    setGearName(gearName);
-  }
-
-  const handleCloseAddGearEffectDlg =  () => {
+    const handleCloseAddGearEffectDlg =  () => {
     closeDlg();
   }
   
