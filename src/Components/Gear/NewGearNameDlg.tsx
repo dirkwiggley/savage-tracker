@@ -30,6 +30,7 @@ const NewGearNameDlg = (props: AddGearValueDlgProps) => {
     if (name !== null) {
       addName(name);
     }
+    handleCloseNewGearNameDlg();
   }
 
   const handleNameChange = (newName: string) => {

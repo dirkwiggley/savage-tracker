@@ -4,12 +4,13 @@ import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
 import GearDisplay from "./GearDisplay";
 import { useContext, useEffect, useState } from "react";
-import { CharDataType, GearType } from "../CharStore/CharData";
+import { CharDataType, GearEffectType, GearType } from "../CharStore/CharData";
 import { AppContext } from "../AppContextProvider";
 import AddGearEffectDlg from "./AddGearEffectDlg";
 import UpPanel from "../UpPanel";
 import LockCharacterBtn from "../LockCharacterBtn";
 import NewGearNameDlg from "./NewGearNameDlg";
+import AddGearValueDlg from "./AddGearValueDlg";
 
 const NAME_STEP = 0;
 const EFFECT_STEP = 1;
@@ -21,10 +22,12 @@ const GearPanel = () => {
   const [char, setChar] = useContext(AppContext)!;
   const [openNewGearNameDlg, setOpenNewGearNameDlg] = useState<boolean>(false);
   const [openAddGearEffectDlg, setOpenAddGearEffectDlg] = useState<boolean>(false);
+  const [openAddGearValueDlg, setOpenAddGearValueDlg] = useState<boolean>(false);
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMsg, setSnackbarMsg] = useState<String | null>(null);
   const [currentStep, setCurrentStep] = useState<stepType>(UNKNOWN_STEP);
   const [gearName, setGearName] = useState<string | null>(null);
+  const [gearEffects, setGearEffects] = useState<Array<GearEffectType> | null>();
 
   useEffect(() => {
     switch (currentStep) {
@@ -67,8 +70,12 @@ const GearPanel = () => {
       setOpenAddGearEffectDlg(true);
     }
 
-    const handleCloseAddEffectDlg = () => {
+    const handleCloseAddEffectDlg = (effects: Array<GearEffectType> | null = null) => {
+      if (effects) {
+        setGearEffects(effects);
+      }
       setOpenAddGearEffectDlg(false);
+      setOpenAddGearValueDlg(true);
     }
 
     const handleAddGear = (gear: GearType) => {
@@ -86,6 +93,10 @@ const GearPanel = () => {
         newChar.gear.push(gear);
         setChar(newChar);
       }
+    }
+
+    const handleCloseGearValueDlg = (values: Array<GearType> | null = null) => {
+      setOpenAddGearValueDlg(false);
     }
 
     const toggleEquipGear = (gearName: string) => {
@@ -178,6 +189,7 @@ const GearPanel = () => {
 
             <NewGearNameDlg openDlg={openNewGearNameDlg} closeDlg={handleCloseNewGearNameDlg} addName={handleAddNewGearName} />
             <AddGearEffectDlg openDlg={openAddGearEffectDlg} closeDlg={handleCloseAddEffectDlg} addGear={handleAddGear} />
+            <AddGearValueDlg openDlg={openAddGearValueDlg} closeDlg={handleCloseGearValueDlg} gearName={gearName ? gearName : ""} gearEffects={gearEffects ? gearEffects : []} />
             {getGear()}
 
             {getAddGearBtn()}
