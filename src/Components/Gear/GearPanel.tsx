@@ -12,10 +12,10 @@ import LockCharacterBtn from "../LockCharacterBtn";
 import NewGearNameDlg from "./NewGearNameDlg";
 import AddGearValueDlg from "./AddGearValueDlg";
 
-const NAME_STEP = 0;
-const EFFECT_STEP = 1;
-const VALUE_STEP = 2;
-const UNKNOWN_STEP = 3;
+const NAME_STEP = "name_step";
+const EFFECT_STEP = "effect_step";
+const VALUE_STEP = "value_step";
+const UNKNOWN_STEP = "unknown_step";
 type stepType = typeof NAME_STEP | typeof EFFECT_STEP | typeof VALUE_STEP | typeof UNKNOWN_STEP; 
 
 const GearPanel = () => {
@@ -34,17 +34,26 @@ const GearPanel = () => {
       case NAME_STEP:
         setGearName(null);
         setOpenNewGearNameDlg(true);
+        setOpenAddGearEffectDlg(false);
+        setOpenAddGearValueDlg(false);
         break;
       case EFFECT_STEP:
+        setOpenNewGearNameDlg(false);
         setOpenAddGearEffectDlg(true);
+        setOpenAddGearValueDlg(false);
         break;
       case VALUE_STEP:
+        setOpenNewGearNameDlg(false);
+        setOpenAddGearEffectDlg(false);
+        setOpenAddGearValueDlg(true);
         break;
       default:
         setGearName(null);
+        setOpenNewGearNameDlg(false);
+        setOpenAddGearEffectDlg(false);
+        setOpenAddGearValueDlg(false);
         return;
     }
-
   }, [currentStep]);
 
   const getNonMobile = () => {
@@ -66,16 +75,16 @@ const GearPanel = () => {
 
     const handleAddNewGearName = (gearName: string) => {
       setGearName(gearName);
-      handleCloseNewGearNameDlg();
-      setOpenAddGearEffectDlg(true);
+      setCurrentStep(EFFECT_STEP);
     }
 
     const handleCloseAddEffectDlg = (effects: Array<GearEffectType> | null = null) => {
       if (effects) {
         setGearEffects(effects);
+        setCurrentStep(VALUE_STEP);
+      } else {
+        setOpenAddGearEffectDlg(false);
       }
-      setOpenAddGearEffectDlg(false);
-      setOpenAddGearValueDlg(true);
     }
 
     const handleAddGear = (gear: GearType) => {
@@ -96,7 +105,12 @@ const GearPanel = () => {
     }
 
     const handleCloseGearValueDlg = (values: Array<GearType> | null = null) => {
-      setOpenAddGearValueDlg(false);
+      if (values && values.length > 0) {
+        setOpenAddGearValueDlg(false);
+        // TODO: More!
+      } else {
+        setCurrentStep(UNKNOWN_STEP);
+      }
     }
 
     const toggleEquipGear = (gearName: string) => {

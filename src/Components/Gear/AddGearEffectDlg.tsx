@@ -1,4 +1,4 @@
-import { useContext, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Button, Dialog, DialogTitle, Snackbar, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
@@ -27,7 +27,7 @@ const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
   const effectButtons = useMemo(() => {
     const effectButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allGearEffectTypes.forEach((effectType, index) => {
-      if (!gearEffects?.includes(effectType)) {
+      if (!gearEffects || !(gearEffects.includes(effectType))) {
         effectButtons.push(
           <StyledButton key={index} onClick={() => handleAddEffect(effectType)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{effectType}</StyledButton>
         );

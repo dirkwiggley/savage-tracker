@@ -20,7 +20,7 @@ type AddGearValueDlgProps = {
 const NewGearNameDlg = (props: AddGearValueDlgProps) => {
   const { openDlg, closeDlg, addName } = props;
 
-  const [name, setName] = useState<string | null>(null);
+  const [name, setName] = useState<string>("");
 
   const handleCloseNewGearNameDlg = () => {
     closeDlg();
