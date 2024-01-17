@@ -60,13 +60,12 @@ export const getDefaultCharacter = (): CharDataType => {
   ];
   newChar.effects = [];
   const diceType: DiceType = { diceName: D4, quantity: 1};
-  const effectConfig: GearEffectConfig = { typeName: GEAR_ATTACK_DAMAGE, value: [diceType, STR], whenUsed: COMBAT_MELEE}
   newChar.gear = [
     {
       name: "Dagger", 
       effects: [
         { 
-          typeName: GEAR_ATTACK_DAMAGE, value: 
+          typeName: GEAR_MELEE_DAMAGE, value: 
           [
             { 
               diceName: D4, 
@@ -77,7 +76,7 @@ export const getDefaultCharacter = (): CharDataType => {
           whenUsed: COMBAT_MELEE
         },
         { 
-          typeName: GEAR_ATTACK_DAMAGE, value: 
+          typeName: GEAR_THROWING_DAMAGE, value: 
           [
             { 
               diceName: D4, 
@@ -121,19 +120,24 @@ export const isCharDataType = (arg: any): arg is CharDataType => {
 export const COMBAT_MELEE = "combat melee";
 export const COMBAT_SHOOTING = "combat shooting";
 export const COMBAT_THROWING = "combat throwing";
+export const COMBAT_AREA = "combat area";
 export const MOVEMENT = "movement";
 export const CASTING = "casting";
 export const SKILL_CHECK = "skill check";
-export type WhenType = typeof COMBAT_MELEE | typeof COMBAT_SHOOTING | typeof COMBAT_THROWING | typeof MOVEMENT | typeof CASTING | typeof SKILL_CHECK;
-export const ALL_WHEN_TYPES: Array<WhenType> = [COMBAT_MELEE, COMBAT_SHOOTING, COMBAT_THROWING, MOVEMENT, CASTING, SKILL_CHECK];
+export const DEFENSE = "defense";
+export type WhenType = typeof COMBAT_MELEE | typeof COMBAT_SHOOTING | typeof COMBAT_THROWING | typeof COMBAT_AREA | typeof MOVEMENT | typeof CASTING | typeof SKILL_CHECK | typeof DEFENSE;
+export const ALL_WHEN_TYPES: Array<WhenType> = [COMBAT_MELEE, COMBAT_SHOOTING, COMBAT_THROWING, COMBAT_AREA, MOVEMENT, CASTING, SKILL_CHECK];
 export const GEAR_TOUGHNESS = "Toughness";
 export const GEAR_ARMOR = "Armor";
-export const GEAR_ATTACK_DAMAGE = "Attack Damage";
+export const GEAR_MELEE_DAMAGE = "Melee Damage";
+export const GEAR_SHOOTING_DAMAGE = "Ranged Damage";
+export const GEAR_THROWING_DAMAGE = "Throwing Damage";
+export const GEAR_AREA_DAMAGE = "Area Damage";
 export const GEAR_PARRY = "Parry";
 export const GEAR_DODGE = "Dodge";
 export const GEAR_SKILL = "Skill";
-export type GearEffectType = typeof GEAR_TOUGHNESS | typeof GEAR_ARMOR | typeof GEAR_ATTACK_DAMAGE | typeof GEAR_PARRY | typeof GEAR_DODGE | typeof GEAR_SKILL;
-export const allGearEffectTypes: Array<GearEffectType> = [GEAR_TOUGHNESS, GEAR_ARMOR, GEAR_ATTACK_DAMAGE, GEAR_PARRY, GEAR_DODGE, GEAR_SKILL ];
+export type GearEffectType = typeof GEAR_TOUGHNESS | typeof GEAR_ARMOR | typeof GEAR_MELEE_DAMAGE | typeof GEAR_SHOOTING_DAMAGE | typeof GEAR_THROWING_DAMAGE | typeof GEAR_AREA_DAMAGE | typeof GEAR_PARRY | typeof GEAR_DODGE | typeof GEAR_SKILL;
+export const allGearEffectTypes: Array<GearEffectType> = [GEAR_TOUGHNESS, GEAR_ARMOR, GEAR_MELEE_DAMAGE, GEAR_SHOOTING_DAMAGE, GEAR_THROWING_DAMAGE, GEAR_AREA_DAMAGE, GEAR_PARRY, GEAR_DODGE, GEAR_SKILL ];
 export type DiceType = {
   diceName: DiceNameType;
   quantity: number;
@@ -144,13 +148,38 @@ export const isDiceType = (obj: any): obj is DiceType => {
   }
   return false;
 }
+export const getWhenUsed = (gearEffectType: GearEffectType): WhenType => {
+  switch (gearEffectType) {
+    case GEAR_TOUGHNESS:
+      return DEFENSE;
+    case GEAR_ARMOR:
+      return DEFENSE;
+    case GEAR_MELEE_DAMAGE:
+      return COMBAT_MELEE;
+    case GEAR_SHOOTING_DAMAGE:
+      return COMBAT_SHOOTING;
+    case GEAR_THROWING_DAMAGE:
+      return COMBAT_THROWING;
+    case GEAR_AREA_DAMAGE:
+      return COMBAT_AREA;
+    case GEAR_PARRY:
+      return DEFENSE;
+    case GEAR_DODGE:
+      return DEFENSE;
+    case GEAR_SKILL:
+      return SKILL_CHECK;
+    default:
+      return COMBAT_MELEE;
+  }
+}
 export type EffectValueType = number | DiceType | AttributeNameType;
 
 export type GearEffectConfig = {
   typeName: GearEffectType;
-  value: Array<EffectValueType>;
-  whenUsed: WhenType;
+  value?: Array<EffectValueType>;
+  whenUsed?: WhenType;
 }
+
 export type GearType = {
   name: string;
   effects: Array<GearEffectConfig>;

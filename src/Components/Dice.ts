@@ -10,21 +10,26 @@ export const D12_PLUS2 = "d12+2";
 export type DiceNameType = typeof D4_MINUS2 | typeof D4_MINUS1 | typeof D4 | typeof D6 | typeof D8 | typeof D10 | typeof D12 | typeof D12_PLUS1 | typeof D12_PLUS2;
 export type Dice_Id_Range = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export const allDiceNames: Array<DiceNameType> = [D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2]
+export const isDiceType = (diceName: string) => {
+  const diceTypes = [D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2];
+  return diceTypes.includes(diceName);
+}
 export type DiceInfoType = {
   id: Dice_Id_Range;
   name: DiceNameType;
   numberValue: number;
+  modifier: number;
 }
 export const diceInfo: Array<DiceInfoType> = [
-  {id: 0, name: D4_MINUS2, numberValue: 4},
-  {id: 1, name: D4_MINUS1, numberValue: 4},
-  {id: 2, name: D4, numberValue: 4},
-  {id: 3, name: D6, numberValue: 6},
-  {id: 4, name: D8, numberValue: 8},
-  {id: 5, name: D10, numberValue: 10},
-  {id: 6, name: D12, numberValue: 12},
-  {id: 7, name: D12_PLUS1, numberValue: 12},
-  {id: 8, name: D12_PLUS2, numberValue: 12},
+  {id: 0, name: D4_MINUS2, numberValue: 4, modifier: -2},
+  {id: 1, name: D4_MINUS1, numberValue: 4, modifier: -1},
+  {id: 2, name: D4, numberValue: 4, modifier: 0},
+  {id: 3, name: D6, numberValue: 6, modifier: 0},
+  {id: 4, name: D8, numberValue: 8, modifier: 0},
+  {id: 5, name: D10, numberValue: 10, modifier: 0},
+  {id: 6, name: D12, numberValue: 12, modifier: 0},
+  {id: 7, name: D12_PLUS1, numberValue: 12, modifier: 1},
+  {id: 8, name: D12_PLUS2, numberValue: 12, modifier: 2},
 ]
 const findDiceId = (name: DiceNameType): number => {
   const dieInfo = diceInfo.find(info => info.name === name);

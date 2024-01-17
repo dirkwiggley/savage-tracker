@@ -13,28 +13,24 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 type AddGearValueDlgProps = {
   openDlg: boolean,
-  closeDlg: () => void;
-  addName: (name: string) => void;
+  closeDlg: (gearName: string | null) => void;
 }
 
 const NewGearNameDlg = (props: AddGearValueDlgProps) => {
-  const { openDlg, closeDlg, addName } = props;
+  const { openDlg, closeDlg } = props;
 
   const [name, setName] = useState<string>("");
 
   const handleCloseNewGearNameDlg = () => {
-    closeDlg();
-  }
-
-  const handleAddName = () => {
-    if (name !== null) {
-      addName(name);
-    }
-    handleCloseNewGearNameDlg();
+    closeDlg(null);
   }
 
   const handleNameChange = (newName: string) => {
     setName(newName);
+  }
+
+  const handleSelect = () => {
+    closeDlg(name);
   }
 
   return (
@@ -78,7 +74,7 @@ const NewGearNameDlg = (props: AddGearValueDlgProps) => {
         />
       </DialogContent>
 
-      <StyledButton onClick={handleAddName} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Select</StyledButton>
+      <StyledButton onClick={handleSelect} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Select</StyledButton>
       <StyledButton onClick={handleCloseNewGearNameDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
     </Dialog>
   );

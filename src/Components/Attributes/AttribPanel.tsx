@@ -21,10 +21,7 @@ export const VIG = "VIG";
 export type AttributeNameType = typeof AGI | typeof SMA | typeof SPI | typeof STR | typeof VIG;
 export const allAttributeNames: Array<AttributeNameType> = [AGI, SMA, SPI, STR, VIG];
 export const isAttributeName = (value: string): value is AttributeNameType => {
-  if (allAttributeNames.includes(value as AttributeNameType)) {
-    return true;
-  } 
-  return false;
+   return allAttributeNames.includes(value as AttributeNameType);
 }
 const AttribPanel = () => {
   const [char, setChar] = useContext(AppContext)!;

@@ -19,7 +19,7 @@ const GearDisplay = (props: GearParentPropTypes) => {
     for (let index = 0; index < gear.effects.length; index++) {
       const effect = gear.effects[index];
       effectString += effect.typeName + " ";
-      effect.value.forEach((value, index) => {
+      effect.value?.forEach((value, index) => {
         if (index > 0) {
           effectString += " and ";
         }

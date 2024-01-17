@@ -1,8 +1,8 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Button, Dialog, DialogTitle, Snackbar, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, GearEffectConfig, GearEffectType, GearType } from "../CharStore/CharData";
+import { allGearEffectTypes, GearEffectType, GearType } from "../CharStore/CharData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -13,14 +13,13 @@ const StyledButton = styled(Button)(({ theme }) => ({
   }
 }));
 
-type AddGearEffectDlgProps = {
+type AddGearEffectProps = {
   openDlg: boolean,
   closeDlg: (effects?: Array<GearEffectType> | null) => void;
-  addGear: (gear: GearType) => void;
 }
 
-const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
-  const {openDlg, closeDlg, addGear} = props;
+const AddGearEffectDlg = (props: AddGearEffectProps) => {
+  const {openDlg, closeDlg} = props;
   const [char, setChar] = useContext(AppContext)!;
   const [gearEffects, setGearEffects] = useState<Array<GearEffectType> | null>(null);
 
@@ -31,6 +30,8 @@ const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
         effectButtons.push(
           <StyledButton key={index} onClick={() => handleAddEffect(effectType)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{effectType}</StyledButton>
         );
+      } else {
+        effectButtons.push(<StyledButton key={index} disabled={true} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{effectType}</StyledButton>)
       }
     });
     return effectButtons;
@@ -40,6 +41,7 @@ const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
     const newEffects: Array<GearEffectType> = gearEffects ? [...gearEffects] : [];
     newEffects.push(effectType);
     setGearEffects(newEffects);
+    // closeDlg(newEffects); // Close the dialog after adding the effect
   }
 
   const handleCloseAddGearEffectDlg =  () => {
@@ -48,7 +50,6 @@ const AddGearEffectDlg = (props: AddGearEffectDlgProps) => {
   
   return (
     <Dialog onClose={handleCloseAddGearEffectDlg} open={openDlg}>
-
       <DialogTitle style={{ marginTop: -10, marginBottom: -20 }}>Pick Effect to add</DialogTitle>
       <>
         {effectButtons}

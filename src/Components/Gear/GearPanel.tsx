@@ -69,12 +69,11 @@ const GearPanel = () => {
       setCurrentStep(NAME_STEP);
     }
 
-    const handleCloseNewGearNameDlg = () => {
+    const handleCloseNewGearNameDlg = (gearName: string | null = null) => {
+      if (gearName) {
+        setGearName(gearName);
+      }
       setOpenNewGearNameDlg(false);
-    }
-
-    const handleAddNewGearName = (gearName: string) => {
-      setGearName(gearName);
       setCurrentStep(EFFECT_STEP);
     }
 
@@ -143,7 +142,6 @@ const GearPanel = () => {
   
     const getGear = () => {
       const gearArray: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
-      const groups: Array<string> = [];
       if (char.gear) {
         char.gear.forEach((gear, index) => {
           gearArray.push(
@@ -178,11 +176,6 @@ const GearPanel = () => {
     return (
       <MobileBox>
 
-        <AddGearEffectDlg
-          openDlg={openAddGearEffectDlg}
-          closeDlg={() => {}}
-          addGear={() => {}}
-        />
         <Snackbar
           open={openSnackbar}
           autoHideDuration={2000}
@@ -201,9 +194,17 @@ const GearPanel = () => {
               <Typography variant="h4" fontWeight={900}>Gear</Typography>
             </Box>
 
-            <NewGearNameDlg openDlg={openNewGearNameDlg} closeDlg={handleCloseNewGearNameDlg} addName={handleAddNewGearName} />
-            <AddGearEffectDlg openDlg={openAddGearEffectDlg} closeDlg={handleCloseAddEffectDlg} addGear={handleAddGear} />
-            <AddGearValueDlg openDlg={openAddGearValueDlg} closeDlg={handleCloseGearValueDlg} gearName={gearName ? gearName : ""} gearEffects={gearEffects ? gearEffects : []} />
+            <NewGearNameDlg 
+              openDlg={openNewGearNameDlg} 
+              closeDlg={handleCloseNewGearNameDlg} />
+            <AddGearEffectDlg 
+              openDlg={openAddGearEffectDlg} 
+              closeDlg={handleCloseAddEffectDlg} />
+            <AddGearValueDlg 
+              openDlg={openAddGearValueDlg} 
+              closeDlg={handleCloseGearValueDlg} 
+              gearName={gearName ? gearName : ""} 
+              gearEffects={gearEffects ? gearEffects : []} />
             {getGear()}
 
             {getAddGearBtn()}
