@@ -23,6 +23,13 @@ export const allAttributeNames: Array<AttributeNameType> = [AGI, SMA, SPI, STR, 
 export const isAttributeName = (value: string): value is AttributeNameType => {
    return allAttributeNames.includes(value as AttributeNameType);
 }
+export const isAttributeNameType = (obj: any): obj is AttributeNameType => {
+  if (allAttributeNames.includes(obj)) {
+    return true;
+  }
+  return false;
+}
+
 const AttribPanel = () => {
   const [char, setChar] = useContext(AppContext)!;
 

@@ -1,3 +1,5 @@
+import { EffectValueType } from "./CharStore/CharData";
+
 export const D4_MINUS2 = "d4-2";
 export const D4_MINUS1 = "d4-1";
 export const D4 = "d4";
@@ -10,10 +12,18 @@ export const D12_PLUS2 = "d12+2";
 export type DiceNameType = typeof D4_MINUS2 | typeof D4_MINUS1 | typeof D4 | typeof D6 | typeof D8 | typeof D10 | typeof D12 | typeof D12_PLUS1 | typeof D12_PLUS2;
 export type Dice_Id_Range = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 export const allDiceNames: Array<DiceNameType> = [D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2]
-export const isDiceType = (diceName: string) => {
+export const isDiceType = (obj: any) => {
+  let diceName = ""
+  if (obj.diceName) {
+    diceName = obj.diceName;
+  } else if (typeof obj === 'string') {
+    diceName = obj;
+  }
+  
   const diceTypes = [D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2];
   return diceTypes.includes(diceName);
 }
+
 export type DiceInfoType = {
   id: Dice_Id_Range;
   name: DiceNameType;

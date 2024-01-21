@@ -4,7 +4,7 @@ import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
 import GearDisplay from "./GearDisplay";
 import { useContext, useEffect, useState } from "react";
-import { CharDataType, GearEffectType, GearType } from "../CharStore/CharData";
+import { CharDataType, GearEffectConfig, GearEffectType, GearType } from "../CharStore/CharData";
 import { AppContext } from "../AppContextProvider";
 import AddGearEffectDlg from "./AddGearEffectDlg";
 import UpPanel from "../UpPanel";
@@ -27,7 +27,7 @@ const GearPanel = () => {
   const [snackbarMsg, setSnackbarMsg] = useState<String | null>(null);
   const [currentStep, setCurrentStep] = useState<stepType>(UNKNOWN_STEP);
   const [gearName, setGearName] = useState<string | null>(null);
-  const [gearEffects, setGearEffects] = useState<Array<GearEffectType> | null>();
+  const [gearEffectCfgs, setGearEffectCfgs] = useState<Array<GearEffectConfig>>([]);
 
   useEffect(() => {
     switch (currentStep) {
@@ -69,17 +69,17 @@ const GearPanel = () => {
       setCurrentStep(NAME_STEP);
     }
 
-    const handleCloseNewGearNameDlg = (gearName: string | null = null) => {
-      if (gearName) {
-        setGearName(gearName);
+    const handleCloseNewGearNameDlg = (newGearName: string | null = null) => {
+      if (newGearName) {
+        setGearName(newGearName);
       }
       setOpenNewGearNameDlg(false);
       setCurrentStep(EFFECT_STEP);
     }
 
-    const handleCloseAddEffectDlg = (effects: Array<GearEffectType> | null = null) => {
+    const handleCloseAddEffectDlg = (effects: Array<GearEffectConfig> | null = null) => {
       if (effects) {
-        setGearEffects(effects);
+        setGearEffectCfgs(effects);
         setCurrentStep(VALUE_STEP);
       } else {
         setOpenAddGearEffectDlg(false);
@@ -173,6 +173,28 @@ const GearPanel = () => {
       );
     }
 
+    const getDialog = () => {
+      switch (currentStep) {
+        case NAME_STEP:
+          return <NewGearNameDlg 
+                  openDlg={openNewGearNameDlg} 
+                  closeDlg={handleCloseNewGearNameDlg} />
+        case EFFECT_STEP:
+          return <AddGearEffectDlg 
+                  openDlg={openAddGearEffectDlg}
+                  gearEffectCfgs={gearEffectCfgs}
+                  closeDlg={handleCloseAddEffectDlg} />
+        case VALUE_STEP:
+          return <AddGearValueDlg 
+                  openDlg={openAddGearValueDlg} 
+                  closeDlg={handleCloseGearValueDlg} 
+                  gearName={gearName ? gearName : ""} 
+                  gearEffectCfgs={gearEffectCfgs ? gearEffectCfgs : []} />
+        default:
+          return null;
+      }
+    }
+
     return (
       <MobileBox>
 
@@ -194,7 +216,8 @@ const GearPanel = () => {
               <Typography variant="h4" fontWeight={900}>Gear</Typography>
             </Box>
 
-            <NewGearNameDlg 
+            {getDialog()}
+            {/* <NewGearNameDlg 
               openDlg={openNewGearNameDlg} 
               closeDlg={handleCloseNewGearNameDlg} />
             <AddGearEffectDlg 
@@ -204,7 +227,7 @@ const GearPanel = () => {
               openDlg={openAddGearValueDlg} 
               closeDlg={handleCloseGearValueDlg} 
               gearName={gearName ? gearName : ""} 
-              gearEffects={gearEffects ? gearEffects : []} />
+              gearEffectCfgs={gearEffectCfgs ? gearEffectCfgs : []} /> */}
             {getGear()}
 
             {getAddGearBtn()}

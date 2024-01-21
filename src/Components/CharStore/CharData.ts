@@ -1,4 +1,4 @@
-import { AGI, AttributeNameType, SMA, SPI, STR, VIG } from "../Attributes/AttribPanel";
+import { AGI, AttributeNameType, SMA, SPI, STR, VIG, allAttributeNames } from "../Attributes/AttribPanel";
 import { AttribPropTypes } from "../Attributes/AttribDisplay";
 import { DerivedStatNames, DerivedStatTypes, PACE, PARRY, TOUGHNESS } from "../DerivedStats/DerivedStatsDisplay";
 import { BENNIES, HEALTH, POWER, TokenNames, TokenPropTypes } from "../Tokens/TokenDisplay";
@@ -65,8 +65,8 @@ export const getDefaultCharacter = (): CharDataType => {
       name: "Dagger", 
       effects: [
         { 
-          typeName: GEAR_MELEE_DAMAGE, value: 
-          [
+          typeName: GEAR_MELEE_DAMAGE, 
+          values: [
             { 
               diceName: D4, 
               quantity: 1
@@ -76,8 +76,8 @@ export const getDefaultCharacter = (): CharDataType => {
           whenUsed: COMBAT_MELEE
         },
         { 
-          typeName: GEAR_THROWING_DAMAGE, value: 
-          [
+          typeName: GEAR_THROWING_DAMAGE, 
+          values: [
             { 
               diceName: D4, 
               quantity: 1
@@ -148,6 +148,7 @@ export const isDiceType = (obj: any): obj is DiceType => {
   }
   return false;
 }
+
 export const getWhenUsed = (gearEffectType: GearEffectType): WhenType => {
   switch (gearEffectType) {
     case GEAR_TOUGHNESS:
@@ -176,7 +177,7 @@ export type EffectValueType = number | DiceType | AttributeNameType;
 
 export type GearEffectConfig = {
   typeName: GearEffectType;
-  value?: Array<EffectValueType>;
+  values: Array<EffectValueType>;
   whenUsed?: WhenType;
 }
 

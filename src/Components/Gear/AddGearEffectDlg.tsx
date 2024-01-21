@@ -2,7 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Button, Dialog, DialogTitle, Snackbar, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, GearEffectType, GearType } from "../CharStore/CharData";
+import { allGearEffectTypes, GearEffectConfig, GearEffectType, getWhenUsed } from "../CharStore/CharData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -15,18 +15,30 @@ const StyledButton = styled(Button)(({ theme }) => ({
 
 type AddGearEffectProps = {
   openDlg: boolean,
-  closeDlg: (effects?: Array<GearEffectType> | null) => void;
+  gearEffectCfgs: Array<GearEffectConfig>,
+  closeDlg: (effects?: Array<GearEffectConfig> | null) => void;
 }
 
 const AddGearEffectDlg = (props: AddGearEffectProps) => {
-  const {openDlg, closeDlg} = props;
+  const {openDlg, gearEffectCfgs, closeDlg} = props;
   const [char, setChar] = useContext(AppContext)!;
-  const [gearEffects, setGearEffects] = useState<Array<GearEffectType> | null>(null);
+  const [newGearEffectCfgs, setNewGearEffectCfgs] = useState<Array<GearEffectConfig>>(gearEffectCfgs);
 
+  const gearEffectCfgsIncludes = (effectType: GearEffectType) => {
+    if (!newGearEffectCfgs) return null;
+    let isIncluded = false;
+    newGearEffectCfgs.forEach(effectCfg => {
+      if (effectCfg.typeName === effectType) {
+        isIncluded = true;
+      }
+    });
+    return isIncluded;
+  }
+    
   const effectButtons = useMemo(() => {
     const effectButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allGearEffectTypes.forEach((effectType, index) => {
-      if (!gearEffects || !(gearEffects.includes(effectType))) {
+      if (!newGearEffectCfgs || !(gearEffectCfgsIncludes(effectType))) {
         effectButtons.push(
           <StyledButton key={index} onClick={() => handleAddEffect(effectType)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{effectType}</StyledButton>
         );
@@ -35,17 +47,21 @@ const AddGearEffectDlg = (props: AddGearEffectProps) => {
       }
     });
     return effectButtons;
-  }, [char, gearEffects]);
+  }, [char, newGearEffectCfgs]);
 
   const handleAddEffect = (effectType: GearEffectType) => {
-    const newEffects: Array<GearEffectType> = gearEffects ? [...gearEffects] : [];
-    newEffects.push(effectType);
-    setGearEffects(newEffects);
-    // closeDlg(newEffects); // Close the dialog after adding the effect
+    let newEffectCfg: GearEffectConfig = {
+      typeName: effectType,
+      values: [],
+      whenUsed: getWhenUsed(effectType)
+    }
+    const newEffects: Array<GearEffectConfig> = newGearEffectCfgs ? [...newGearEffectCfgs] : [];
+    newEffects.push(newEffectCfg);
+    setNewGearEffectCfgs(newEffects);
   }
 
   const handleCloseAddGearEffectDlg =  () => {
-    closeDlg(gearEffects);
+    closeDlg(newGearEffectCfgs);
   }
   
   return (
