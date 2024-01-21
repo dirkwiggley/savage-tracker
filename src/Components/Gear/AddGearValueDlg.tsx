@@ -1,6 +1,6 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
-import { Box, Button, Dialog, DialogTitle, FormControl, FormControlLabel, FormLabel, Input, Radio, RadioGroup, Typography, styled } from "@mui/material";
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Input, Radio, RadioGroup, Typography, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
 import { allGearEffectTypes, DiceType, EffectValueType, GearEffectConfig, GearEffectType, GearType, getWhenUsed } from "../CharStore/CharData";
 import { AttributeNameType, allAttributeNames, isAttributeName, isAttributeNameType } from "../Attributes/AttribPanel";
@@ -31,11 +31,12 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   const { openDlg, closeDlg, gearName, gearEffectCfgs } = props;
   const [char, setChar] = useContext(AppContext)!;
   const [newGearName, setNewGearName] = useState<string>(gearName);
-  const [newGearEffectCfgs, setGearEffectCfgs] = useState<Array<GearEffectConfig> | null>(gearEffectCfgs);
-  const [currentEffect, setCurrentEffect] = useState<GearEffectConfig | null>(gearEffectCfgs[0]);
+  const [newGearEffectCfgs, setNewGearEffectCfgs] = useState<Array<GearEffectConfig>>(gearEffectCfgs);
+  const [currentEffect, setCurrentEffect] = useState<GearEffectConfig>(gearEffectCfgs[0]);
   const [currentValueType, setCurrentValueType] = useState<ValueType>(DICE);
   const [gear, setGear] = useState<GearType | null>(null);
   const [displayValue, setDisplayValue] = useState<string>("");
+  const [openClearDlg, setOpenClearDlg] = useState<boolean>(false);
 
   useEffect(() => {
     setNewGearName(gearName);
@@ -44,7 +45,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
 
   const getEffectButtons = () => {
     const eButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
-    newGearEffectCfgs?.forEach((effectCfg, index) => {
+    newGearEffectCfgs.forEach((effectCfg, index) => {
       eButtons.push(
         <StyledButton key={index} onClick={() => setCurrentEffect(effectCfg)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{effectCfg.typeName}</StyledButton>
       );
@@ -56,7 +57,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     const attribButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allAttributeNames.forEach((attribute, index) => {
       attribButtons.push(
-        <StyledButton key={index} onClick={() => handleAddValue(attribute)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{attribute}</StyledButton>
+        <StyledButton key={index} onClick={(e) => handleAddValue(attribute)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{attribute}</StyledButton>
       );
     });
     return <>{attribButtons}</>;
@@ -66,7 +67,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     const diceButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allDiceNames.forEach((diceName, index) => {
       diceButtons.push(
-        <StyledButton key={index} onClick={() => handleAddValue(diceName)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{diceName}</StyledButton>
+        <StyledButton key={index} onClick={(e) => handleAddValue(diceName)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{diceName}</StyledButton>
       );
     });
     return <>{diceButtons}</>;
@@ -74,7 +75,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
 
   const handleTextInput = (e: any) => {
     const value = e.target.value;
-    if (typeof Number(value) === "number") {
+    if (typeof Number(value) === "number" || value === "") {
       if (e.key === "Enter") {
         handleAddValue(value);
       }
@@ -86,7 +87,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   const getValueInput = useMemo(() => {
     return (
       <>
-        <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, marginTop: 2}}>
+        <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, marginTop: 2, paddingLeft: 2, paddingRight: 2}}>
           <Input aria-label="Bonus/Penalty" placeholder="Enter bonus/penalty" onKeyUp={(e) => handleTextInput(e)} />
         </Box>
       </>
@@ -95,6 +96,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
 
   const modifyDiceValue = (value: string, newEffectCfg: GearEffectConfig) => {
     if (newEffectCfg.values!.length === 0) {
+      // No values in effectCfg? Make a default one
       newEffectCfg.values!.push(
         {
           diceName: value as DiceNameType,
@@ -102,6 +104,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
         }
       );
     } else {
+      // Find the value in the effectCfg that matches the dice type (value)
       let correctValue: DiceType | null = null;
       for (let i = 0; i < newEffectCfg.values.length; i++) {
         let currentValue = newEffectCfg.values[i];
@@ -113,26 +116,32 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       if (correctValue) {
         correctValue.quantity += 1;
       } else {
+        // Couldn't find the dice type, make a default one
         correctValue = {
           diceName: value as DiceNameType,
           quantity: 1
         };
+        // Add the value we made to the effectCfg
         newEffectCfg.values.push(correctValue);
-        newGearEffectCfgs!.push(newEffectCfg);
       }
     }
   }
 
   const handleAddValue = (value: string) => {
-    let newEffectCfg = newGearEffectCfgs?.find(effectCfg => {
+    let geCfgs = [...newGearEffectCfgs];
+    // Find the effectCfg with the type name that matches our 
+    // currentEffect (from state)
+    let newEffectCfg = geCfgs.find(effectCfg => {
       return effectCfg.typeName === currentEffect?.typeName;
     });
     if (!newEffectCfg) {
+      // Couldn't find a matching effectCfg so we will make a default one
       newEffectCfg = {
-        typeName: currentEffect!.typeName,
+        typeName: currentEffect.typeName,
         values: [],
         whenUsed: getWhenUsed(currentEffect!.typeName)
       }
+      geCfgs.push(newEffectCfg);
     }
     if (isDiceType(value)) {
       modifyDiceValue(value, newEffectCfg);
@@ -153,13 +162,12 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
         let newValue = Number(value);
         let foundValue = false;
         for (let i = 0; i < newEffectCfg.values.length; i++) {
-          let currentValue = newEffectCfg.values[i];
-          if (typeof currentValue === 'number') {
-            currentValue = newValue;
+          if (typeof newEffectCfg.values[i] === 'number') {
+            newEffectCfg.values[i] = newValue;
             foundValue = true;
             break;
           }
-        }
+        } 
         if (!foundValue) {
           newEffectCfg.values.push(newValue);
         }
@@ -168,7 +176,8 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       console.error("Invalid value type");
       return;
     }
-    getDisplayValue();
+    setNewGearEffectCfgs(geCfgs);
+    modifyDisplayValue();
   }
 
   const handleCloseAddGearValueDlg = () => {
@@ -193,7 +202,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     }
   }
 
-  const getDisplayValue = () => {
+  const modifyDisplayValue = () => {
     let display = "";
     let newEffectCfg = newGearEffectCfgs?.find(effectCfg => {
       return effectCfg.typeName === currentEffect?.typeName;
@@ -226,9 +235,9 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
           if (display !== "") {
             display += " "
           }
-          if (currentValue > -1) {
+          if (currentValue > 0) {
             display += "+" + currentValue;
-          } else {
+          } else if (currentValue < 0) {
             display += currentValue;
           }
           break;
@@ -238,9 +247,48 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     setDisplayValue(display);
   }
 
+  const checkBeforeOpenClearDlg = () => {
+    if (currentEffect.values.length > 0) {
+      setOpenClearDlg(true);
+    }
+  }
+
+  const clearValues = () => {
+    let geCfgs = [...newGearEffectCfgs];
+    let cfg: GearEffectConfig | undefined = geCfgs.find(cfg => cfg.typeName === currentEffect.typeName);
+    if (cfg) {
+      cfg.values = [];
+    }
+    setNewGearEffectCfgs(geCfgs);
+    setOpenClearDlg(false);
+    modifyDisplayValue();
+  }
+
   return (
     <Dialog onClose={handleCloseAddGearValueDlg} open={openDlg}>
-
+      <Dialog
+        open={openClearDlg}
+        onClose={() => setOpenClearDlg(false)}
+        aria-labelledby={"clear-dialog"}
+      >
+        <DialogTitle id="clear-dialog">Clear Values Dialog</DialogTitle>
+        <DialogContent></DialogContent>
+        <DialogActions>
+          <Button 
+            variant={"contained"}
+            onClick={() => setOpenClearDlg(false)}
+          >
+            Cancel
+          </Button>
+          <Button
+            variant={"contained"}
+            onClick={clearValues}
+          >
+            Clear Values
+          </Button>
+        </DialogActions>
+      </Dialog>
+      
       <DialogTitle style={{ marginTop: -10, marginBottom: -20 }}>Pick Value to add</DialogTitle>
 
       {getEffectButtons()}
@@ -260,9 +308,10 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       </Box>
       {getValueButtons()}
 
-      <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, minHeight: "2rem", marginTop: 2}} >
+      <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, minHeight: "2rem", marginTop: 2}}>
         <Typography sx={{textAlign: "center", marginTop: 0.5}}>{displayValue}</Typography>
       </Box>
+      <StyledButton onClick={checkBeforeOpenClearDlg} sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>Clear Values</StyledButton>
       <StyledButton onClick={handleCloseAddGearValueDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
     </Dialog>
   );

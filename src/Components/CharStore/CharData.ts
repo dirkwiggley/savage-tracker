@@ -1,4 +1,4 @@
-import { AGI, AttributeNameType, SMA, SPI, STR, VIG, allAttributeNames } from "../Attributes/AttribPanel";
+import { AGI, AttributeNameType, SMA, SPI, STR, VIG, allAttributeNames, isAttributeName } from "../Attributes/AttribPanel";
 import { AttribPropTypes } from "../Attributes/AttribDisplay";
 import { DerivedStatNames, DerivedStatTypes, PACE, PARRY, TOUGHNESS } from "../DerivedStats/DerivedStatsDisplay";
 import { BENNIES, HEALTH, POWER, TokenNames, TokenPropTypes } from "../Tokens/TokenDisplay";
@@ -185,4 +185,35 @@ export type GearType = {
   name: string;
   effects: Array<GearEffectConfig>;
   equipped: boolean;
+}
+
+export const findGearEffectCfgByTypeName = (effectConfigs: Array<GearEffectConfig> | null, gearEffectTypeName: GearEffectType | undefined): GearEffectConfig | undefined => {
+  if (!effectConfigs || effectConfigs.length === 0 || gearEffectTypeName !== undefined) return;
+  if (!allGearEffectTypes.includes(gearEffectTypeName!)) return;
+  return effectConfigs.find(effectCfg => { return effectCfg.typeName === gearEffectTypeName; });
+}
+
+export const findGearEffectCfgValueByType = (gearEffectConfig: GearEffectConfig, value: string): EffectValueType | undefined => {
+  if (!gearEffectConfig || !gearEffectConfig.values || gearEffectConfig.values.length === 0) return;
+
+  if (isDiceType(value)) {
+    for (let i = 0; i < gearEffectConfig.values.length; i++) {
+      let currentValue = gearEffectConfig.values[i] as DiceType;
+      const diceName: DiceNameType = currentValue.diceName;
+      if (diceName === value.diceName) return currentValue;
+    }
+  } else if (isAttributeName(value)) {
+    for (let i = 0; gearEffectConfig.values.length; i++) {
+      let currentValue = gearEffectConfig.values[i] as AttributeNameType;
+      if (currentValue === value) return currentValue;
+    }
+  } else if (typeof Number(value) === "number") {
+    for (let i = 0; gearEffectConfig.values.length; i++) {
+      let currentValue = gearEffectConfig.values[i] as number;
+      if (currentValue === Number(value)) return currentValue;
+    }
+  } else {
+    console.error("Invalid effectValueType");
+  }
+  return;
 }
