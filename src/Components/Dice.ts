@@ -1,5 +1,3 @@
-import { EffectValueType } from "./CharStore/CharData";
-
 export const D4_MINUS2 = "d4-2";
 export const D4_MINUS1 = "d4-1";
 export const D4 = "d4";

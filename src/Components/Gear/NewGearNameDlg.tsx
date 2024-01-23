@@ -28,6 +28,15 @@ const NewGearNameDlg = (props: AddGearValueDlgProps) => {
   const handleNameChange = (newName: string) => {
     setName(newName);
   }
+  
+  const handleInputKeyUp = (e: any) => {
+    let value = e.target.value;
+    setName(value);
+    let code = e.keyCode;
+    if (code === 13) {
+      handleCloseNewGearNameDlg();
+    }
+  }
 
   const handleSelect = () => {
     closeDlg(name);
@@ -44,8 +53,9 @@ const NewGearNameDlg = (props: AddGearValueDlgProps) => {
           id="gear_name" 
           variant={"standard"} 
           label="Gear Name" 
-          value={name} 
+          value={name}
           onChange={(e) => handleNameChange(e.target.value)}
+          onKeyUp={(e) => handleInputKeyUp(e)}
           sx={{
             '& .MuiOutlinedInput-root': {
               borderRadius: '7px',

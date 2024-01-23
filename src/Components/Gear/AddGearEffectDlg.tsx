@@ -2,7 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Button, Dialog, DialogTitle, Snackbar, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, GearEffectConfig, GearEffectType, getWhenUsed } from "../CharStore/CharData";
+import { allGearEffectTypes, GearEffectConfig, GearEffectType, getWhenUsed } from "./GearData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",

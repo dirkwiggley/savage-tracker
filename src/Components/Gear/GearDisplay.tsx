@@ -1,5 +1,5 @@
-import { isAttributeName } from '../Attributes/AttribPanel';
-import { GearType, DiceType, isDiceType } from '../CharStore/CharData';
+import { AttributeNameType, isAttributeName } from '../Attributes/AttribPanel';
+import { GearType, DiceType, isDiceType, EffectValueType } from './GearData';
 import { Box, Tooltip, Typography } from '@mui/material';
 
 export interface GearParentPropTypes {
@@ -19,7 +19,7 @@ const GearDisplay = (props: GearParentPropTypes) => {
     for (let index = 0; index < gear.effects.length; index++) {
       const effect = gear.effects[index];
       effectString += effect.typeName + " ";
-      effect.values?.forEach((value, index) => {
+      effect.values?.forEach((value: EffectValueType, index: number) => {
         if (index > 0) {
           effectString += " and ";
         }

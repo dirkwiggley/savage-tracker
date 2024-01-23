@@ -6,6 +6,7 @@ import { D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2, DiceN
 import { SkillNameType, SkillInfoType, FIGHTING, SHOOTING, ATHLETICS, COMMON_KNOWLEDGE, NOTICE, PERSUASION, STEALTH } from "../Skills/Skills";
 import {SkillPropTypes} from '../Skills/SkillsDisplay';
 import { EffectPropType } from "../Effects/Effects";
+import { COMBAT_MELEE, COMBAT_THROWING, DiceType, GEAR_MELEE_DAMAGE, GEAR_THROWING_DAMAGE, GearType } from "../Gear/GearData";
 
 export type CharDataType = {
   charName: string;
@@ -116,104 +117,3 @@ export const isCharDataType = (arg: any): arg is CharDataType => {
     // typeof checkChar.skills === typeof Array<SkillPropTypes>
   );
 };
-
-export const COMBAT_MELEE = "combat melee";
-export const COMBAT_SHOOTING = "combat shooting";
-export const COMBAT_THROWING = "combat throwing";
-export const COMBAT_AREA = "combat area";
-export const MOVEMENT = "movement";
-export const CASTING = "casting";
-export const SKILL_CHECK = "skill check";
-export const DEFENSE = "defense";
-export type WhenType = typeof COMBAT_MELEE | typeof COMBAT_SHOOTING | typeof COMBAT_THROWING | typeof COMBAT_AREA | typeof MOVEMENT | typeof CASTING | typeof SKILL_CHECK | typeof DEFENSE;
-export const ALL_WHEN_TYPES: Array<WhenType> = [COMBAT_MELEE, COMBAT_SHOOTING, COMBAT_THROWING, COMBAT_AREA, MOVEMENT, CASTING, SKILL_CHECK];
-export const GEAR_TOUGHNESS = "Toughness";
-export const GEAR_ARMOR = "Armor";
-export const GEAR_MELEE_DAMAGE = "Melee Damage";
-export const GEAR_SHOOTING_DAMAGE = "Shooting Damage";
-export const GEAR_THROWING_DAMAGE = "Throwing Damage";
-export const GEAR_AREA_DAMAGE = "Area Damage";
-export const GEAR_PARRY = "Parry";
-export const GEAR_DODGE = "Dodge";
-export const GEAR_SKILL = "Skill";
-export type GearEffectType = typeof GEAR_TOUGHNESS | typeof GEAR_ARMOR | typeof GEAR_MELEE_DAMAGE | typeof GEAR_SHOOTING_DAMAGE | typeof GEAR_THROWING_DAMAGE | typeof GEAR_AREA_DAMAGE | typeof GEAR_PARRY | typeof GEAR_DODGE | typeof GEAR_SKILL;
-export const allGearEffectTypes: Array<GearEffectType> = [GEAR_TOUGHNESS, GEAR_ARMOR, GEAR_MELEE_DAMAGE, GEAR_SHOOTING_DAMAGE, GEAR_THROWING_DAMAGE, GEAR_AREA_DAMAGE, GEAR_PARRY, GEAR_DODGE, GEAR_SKILL ];
-export type DiceType = {
-  diceName: DiceNameType;
-  quantity: number;
-}
-export const isDiceType = (obj: any): obj is DiceType => {
-  if (obj.diceName !== undefined &&  obj.quantity !== undefined) { 
-    return true; 
-  }
-  return false;
-}
-
-export const getWhenUsed = (gearEffectType: GearEffectType): WhenType => {
-  switch (gearEffectType) {
-    case GEAR_TOUGHNESS:
-      return DEFENSE;
-    case GEAR_ARMOR:
-      return DEFENSE;
-    case GEAR_MELEE_DAMAGE:
-      return COMBAT_MELEE;
-    case GEAR_SHOOTING_DAMAGE:
-      return COMBAT_SHOOTING;
-    case GEAR_THROWING_DAMAGE:
-      return COMBAT_THROWING;
-    case GEAR_AREA_DAMAGE:
-      return COMBAT_AREA;
-    case GEAR_PARRY:
-      return DEFENSE;
-    case GEAR_DODGE:
-      return DEFENSE;
-    case GEAR_SKILL:
-      return SKILL_CHECK;
-    default:
-      return COMBAT_MELEE;
-  }
-}
-export type EffectValueType = number | DiceType | AttributeNameType;
-
-export type GearEffectConfig = {
-  typeName: GearEffectType;
-  values: Array<EffectValueType>;
-  whenUsed?: WhenType;
-}
-
-export type GearType = {
-  name: string;
-  effects: Array<GearEffectConfig>;
-  equipped: boolean;
-}
-
-export const findGearEffectCfgByTypeName = (effectConfigs: Array<GearEffectConfig> | null, gearEffectTypeName: GearEffectType | undefined): GearEffectConfig | undefined => {
-  if (!effectConfigs || effectConfigs.length === 0 || gearEffectTypeName !== undefined) return;
-  if (!allGearEffectTypes.includes(gearEffectTypeName!)) return;
-  return effectConfigs.find(effectCfg => { return effectCfg.typeName === gearEffectTypeName; });
-}
-
-export const findGearEffectCfgValueByType = (gearEffectConfig: GearEffectConfig, value: string): EffectValueType | undefined => {
-  if (!gearEffectConfig || !gearEffectConfig.values || gearEffectConfig.values.length === 0) return;
-
-  if (isDiceType(value)) {
-    for (let i = 0; i < gearEffectConfig.values.length; i++) {
-      let currentValue = gearEffectConfig.values[i] as DiceType;
-      const diceName: DiceNameType = currentValue.diceName;
-      if (diceName === value.diceName) return currentValue;
-    }
-  } else if (isAttributeName(value)) {
-    for (let i = 0; gearEffectConfig.values.length; i++) {
-      let currentValue = gearEffectConfig.values[i] as AttributeNameType;
-      if (currentValue === value) return currentValue;
-    }
-  } else if (typeof Number(value) === "number") {
-    for (let i = 0; gearEffectConfig.values.length; i++) {
-      let currentValue = gearEffectConfig.values[i] as number;
-      if (currentValue === Number(value)) return currentValue;
-    }
-  } else {
-    console.error("Invalid effectValueType");
-  }
-  return;
-}

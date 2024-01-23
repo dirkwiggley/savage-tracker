@@ -1,15 +1,15 @@
-import { useContext, useEffect, useMemo, useState } from "react";
+import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Input, Radio, RadioGroup, Typography, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, DiceType, EffectValueType, GearEffectConfig, GearEffectType, GearType, getWhenUsed } from "../CharStore/CharData";
+import { allGearEffectTypes, DiceType, EffectValueType, findGearEffectCfgIndexByTypeName, GearEffectConfig, GearEffectType, GearType, getWhenUsed } from "./GearData";
 import { AttributeNameType, allAttributeNames, isAttributeName, isAttributeNameType } from "../Attributes/AttribPanel";
 import { DiceNameType, allDiceNames, isDiceType } from "../Dice";
 
 const DICE = "dice";
 const ATTRIBUTE = "attribute";
 const NUMBER = "number";
-type ValueType = typeof DICE | typeof ATTRIBUTE | typeof NUMBER;
+type SelectedValueType = typeof DICE | typeof ATTRIBUTE | typeof NUMBER;
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -32,32 +32,83 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   const [char, setChar] = useContext(AppContext)!;
   const [newGearName, setNewGearName] = useState<string>(gearName);
   const [newGearEffectCfgs, setNewGearEffectCfgs] = useState<Array<GearEffectConfig>>(gearEffectCfgs);
-  const [currentEffect, setCurrentEffect] = useState<GearEffectConfig>(gearEffectCfgs[0]);
-  const [currentValueType, setCurrentValueType] = useState<ValueType>(DICE);
+  const [currentEffectCfg, setCurrentEffectCfg] = useState<GearEffectConfig>({...gearEffectCfgs[0]});
+  const [currentSelectedValueType, setCurrentSelectedValueType] = useState<SelectedValueType>(DICE);
   const [gear, setGear] = useState<GearType | null>(null);
   const [displayValue, setDisplayValue] = useState<string>("");
   const [openClearDlg, setOpenClearDlg] = useState<boolean>(false);
+
+  const currentEffectCfgIndexRef = useRef(0);
 
   useEffect(() => {
     setNewGearName(gearName);
   }, [gearName]);
 
+  useEffect(() => {
+    modifyDisplayValue();
+  }, [currentEffectCfg, currentEffectCfgIndexRef]);
 
-  const getEffectButtons = () => {
+  const getReferencedGearEffect = (): GearEffectConfig => {
+    return newGearEffectCfgs[currentEffectCfgIndexRef.current];
+  }
+
+  const getButtonDisabled = (gearEffectType: GearEffectType): boolean => {
+    const name = getReferencedGearEffect().typeName;
+    if (gearEffectType === name) {
+      return true;
+    }
+    return false;
+  }
+
+  /**
+   * When this is called we are changing from one effect to another due to
+   * a UI button press, so we should copy the currentEffectConfig into the 
+   * newGearConfigs state variable, save that, then copy the newly selected 
+   * effect config into the currentEffectConfig state variable
+   * @param effectCfg: GearEffectConfig, the newly selected GearEffectConfig
+   */
+  const changeCurrentEffectCfg = (effectCfg: GearEffectConfig) => {
+    let geCfgs = [...newGearEffectCfgs];
+    let effectToSwapIndex = findGearEffectCfgIndexByTypeName(geCfgs, effectCfg.typeName);
+    if (effectToSwapIndex !== undefined) {
+      geCfgs[effectToSwapIndex] = effectCfg;
+      setNewGearEffectCfgs(geCfgs);
+      setCurrentEffectCfg(effectCfg);
+      setCurrentSelectedValueType(DICE);
+      currentEffectCfgIndexRef.current = effectToSwapIndex;
+    }
+  }
+  
+  const getEffectButtons = useMemo(() => {
     const eButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     newGearEffectCfgs.forEach((effectCfg, index) => {
       eButtons.push(
-        <StyledButton key={index} onClick={() => setCurrentEffect(effectCfg)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{effectCfg.typeName}</StyledButton>
+        <StyledButton 
+          key={index} 
+          onClick={() => changeCurrentEffectCfg(effectCfg)} 
+          variant="contained"
+          disabled={getButtonDisabled(effectCfg.typeName)}
+          sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}
+        >
+          {effectCfg.typeName}
+        </StyledButton>
       );
     });
     return <>{eButtons}</>;
-  }
+  }, [currentEffectCfg]);
 
   const getAttributeButtons = useMemo(() => {
     const attribButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allAttributeNames.forEach((attribute, index) => {
       attribButtons.push(
-        <StyledButton key={index} onClick={(e) => handleAddValue(attribute)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{attribute}</StyledButton>
+        <StyledButton 
+          key={index} 
+          onClick={(e) => handleAddValue(attribute)} 
+          variant="contained" 
+          sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}
+        >
+          {attribute}
+        </StyledButton>
       );
     });
     return <>{attribButtons}</>;
@@ -67,7 +118,14 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     const diceButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allDiceNames.forEach((diceName, index) => {
       diceButtons.push(
-        <StyledButton key={index} onClick={(e) => handleAddValue(diceName)} variant="contained" sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>{diceName}</StyledButton>
+        <StyledButton 
+          key={index} 
+          onClick={(e) => handleAddValue(diceName)} 
+          variant="contained" 
+          sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}
+        >
+          {diceName}
+        </StyledButton>
       );
     });
     return <>{diceButtons}</>;
@@ -76,7 +134,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   const handleTextInput = (e: any) => {
     const value = e.target.value;
     if (typeof Number(value) === "number" || value === "") {
-      if (e.key === "Enter") {
+      if (e.keyCode === 13) {
         handleAddValue(value);
       }
     } else {
@@ -88,7 +146,11 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     return (
       <>
         <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, marginTop: 2, paddingLeft: 2, paddingRight: 2}}>
-          <Input aria-label="Bonus/Penalty" placeholder="Enter bonus/penalty" onKeyUp={(e) => handleTextInput(e)} />
+          <Input 
+            aria-label="Bonus/Penalty" 
+            placeholder="Enter bonus/penalty" 
+            onKeyUp={(e) => handleTextInput(e)} 
+          />
         </Box>
       </>
     );
@@ -105,24 +167,24 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       );
     } else {
       // Find the value in the effectCfg that matches the dice type (value)
-      let correctValue: DiceType | null = null;
+      let diceValue: DiceType | null = null;
       for (let i = 0; i < newEffectCfg.values.length; i++) {
-        let currentValue = newEffectCfg.values[i];
-        if (isDiceType(currentValue as string) && (currentValue as DiceType).diceName === value) {
-          correctValue = (currentValue as DiceType);
+        let iterDiceValue = newEffectCfg.values[i];
+        if (isDiceType(iterDiceValue as string) && (iterDiceValue as DiceType).diceName === value) {
+          diceValue = (iterDiceValue as DiceType);
           break;
         }
       }
-      if (correctValue) {
-        correctValue.quantity += 1;
+      if (diceValue) {
+        diceValue.quantity += 1;
       } else {
         // Couldn't find the dice type, make a default one
-        correctValue = {
+        diceValue = {
           diceName: value as DiceNameType,
           quantity: 1
         };
         // Add the value we made to the effectCfg
-        newEffectCfg.values.push(correctValue);
+        newEffectCfg.values.push(diceValue);
       }
     }
   }
@@ -130,22 +192,12 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   const handleAddValue = (value: string) => {
     let geCfgs = [...newGearEffectCfgs];
     // Find the effectCfg with the type name that matches our 
-    // currentEffect (from state)
-    let newEffectCfg = geCfgs.find(effectCfg => {
-      return effectCfg.typeName === currentEffect?.typeName;
-    });
-    if (!newEffectCfg) {
-      // Couldn't find a matching effectCfg so we will make a default one
-      newEffectCfg = {
-        typeName: currentEffect.typeName,
-        values: [],
-        whenUsed: getWhenUsed(currentEffect!.typeName)
-      }
-      geCfgs.push(newEffectCfg);
-    }
+    // current EffectCfg
+    let newEffectCfg = {...(getReferencedGearEffect())}
     if (isDiceType(value)) {
       modifyDiceValue(value, newEffectCfg);
     } else if (isAttributeName(value)) {
+      // Only allow each attribute once
       let foundValue = false;
       for (let i = 0; i < newEffectCfg.values.length; i++) {
         let currentValue = newEffectCfg.values[i];
@@ -155,10 +207,12 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
         }
       }
       if (!foundValue) {
-        newEffectCfg.values.push(value);
+        newEffectCfg.values.push(value as AttributeNameType);
       }
-    } else if (typeof value === "string") {
+    } else if (typeof Number(value) === 'number') {
+      // Number bonus/penalty type
       if (typeof Number(value) === 'number') {
+        // Only allow one of these values
         let newValue = Number(value);
         let foundValue = false;
         for (let i = 0; i < newEffectCfg.values.length; i++) {
@@ -177,22 +231,25 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       return;
     }
     setNewGearEffectCfgs(geCfgs);
-    modifyDisplayValue();
+    setCurrentEffectCfg(newEffectCfg);
   }
 
   const handleCloseAddGearValueDlg = () => {
     closeDlg();
   }
 
-  const handleValueTypeChange = (valueType: ValueType) => {
-    setCurrentValueType(valueType);
+  /**
+   * Handle switching between dice, attributes, and numbers
+   * @param valueType 
+   */
+  const handleSelectedValueTypeChange = (valueType: SelectedValueType) => {
+    setCurrentSelectedValueType(valueType);
   }
 
-  const getValueButtons = () => {
-    switch (currentValueType) {
+  const getValueInputs = () => {
+    switch (currentSelectedValueType) {
       case "number":
         return getValueInput;
-        break;
       case "dice":
         return getDiceButtons;
       case "attribute":
@@ -202,15 +259,16 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     }
   }
 
+  /**
+   * The display should be: DiceType [+ AttributeNameType] [+number]
+   */
   const modifyDisplayValue = () => {
     let display = "";
-    let newEffectCfg = newGearEffectCfgs?.find(effectCfg => {
-      return effectCfg.typeName === currentEffect?.typeName;
-    });
-    if (newEffectCfg?.values && newEffectCfg.values.length > 0) {
+    const referencedEffect = getReferencedGearEffect();
+    if (referencedEffect?.values && referencedEffect.values.length > 0) {
       // find the dice types
-      for (let i = 0; i < newEffectCfg?.values.length; i++) {
-        let currentValue = newEffectCfg?.values[i];
+      for (let i = 0; i < referencedEffect?.values.length; i++) {
+        let currentValue = referencedEffect?.values[i];
         if (isDiceType(currentValue as string)) {
           if (display !== "") {
             display += " + "
@@ -219,8 +277,9 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
         }
       }
       // find the attribute types
-      for (let i = 0; i < newEffectCfg?.values.length; i++) {
-        let currentValue = newEffectCfg?.values[i];
+      for (let i = 0; i < referencedEffect?.values.length; i++) {
+        // let currentValue = currentEffectCfg?.values[i];
+        let currentValue = referencedEffect?.values[i];
         if (isAttributeName(currentValue as string)) {
           if (display !== "") {
             display += " + "
@@ -229,8 +288,8 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
         }
       }
       // find the number type
-      for (let i = 0; i < newEffectCfg?.values.length; i++) {
-        let currentValue = newEffectCfg?.values[i];
+      for (let i = 0; i < referencedEffect.values.length; i++) {        
+        let currentValue = referencedEffect?.values[i];
         if (typeof currentValue === 'number') {
           if (display !== "") {
             display += " "
@@ -248,20 +307,30 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   }
 
   const checkBeforeOpenClearDlg = () => {
-    if (currentEffect.values.length > 0) {
+    let referencedEffect = getReferencedGearEffect();
+      if (referencedEffect.values.length > 0) {
       setOpenClearDlg(true);
     }
   }
 
   const clearValues = () => {
+    // Copy all of the gear effects
     let geCfgs = [...newGearEffectCfgs];
-    let cfg: GearEffectConfig | undefined = geCfgs.find(cfg => cfg.typeName === currentEffect.typeName);
+    // get the referenced effect
+    let referencedEffect = getReferencedGearEffect();
+    let cfg: GearEffectConfig = {...referencedEffect};
     if (cfg) {
       cfg.values = [];
     }
-    setNewGearEffectCfgs(geCfgs);
+    // Now swap in the effect with the cleared values for
+    // the old one and save those
+    let effectToSwapIndex = findGearEffectCfgIndexByTypeName(geCfgs, cfg.typeName);
+    if (effectToSwapIndex) {
+      geCfgs[effectToSwapIndex] = cfg;
+      setNewGearEffectCfgs(geCfgs);
+      setCurrentEffectCfg(cfg);
+    }
     setOpenClearDlg(false);
-    modifyDisplayValue();
   }
 
   return (
@@ -291,22 +360,22 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       
       <DialogTitle style={{ marginTop: -10, marginBottom: -20 }}>Pick Value to add</DialogTitle>
 
-      {getEffectButtons()}
+      {getEffectButtons}
 
       <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, marginTop: 2 }}>
         <FormControl sx={{ marginLeft: 2, marginRight: 2 }}>
           <FormLabel id="value-type-group-label">Value Type</FormLabel>
           <RadioGroup
             aria-label="value-type-group-label"
-            defaultValue="dice"
+            defaultValue={DICE}
             name="value-button-group">
-            <FormControlLabel onChange={() => handleValueTypeChange(DICE)} value="dice" control={<Radio />} label="Dice" sx={{ marginTop: -1 }} />
-            <FormControlLabel onChange={() => handleValueTypeChange(ATTRIBUTE)} value="attribute" control={<Radio />} label="Attribute" sx={{ marginTop: -1 }} />
-            <FormControlLabel onChange={() => handleValueTypeChange(NUMBER)} value="number" control={<Radio />} label="Number" sx={{ marginTop: -1 }} />
+            <FormControlLabel onChange={() => handleSelectedValueTypeChange(DICE)} value="dice" control={<Radio />} label="Dice" sx={{ marginTop: -1 }} />
+            <FormControlLabel onChange={() => handleSelectedValueTypeChange(ATTRIBUTE)} value="attribute" control={<Radio />} label="Attribute" sx={{ marginTop: -1 }} />
+            <FormControlLabel onChange={() => handleSelectedValueTypeChange(NUMBER)} value="number" control={<Radio />} label="Number" sx={{ marginTop: -1 }} />
           </RadioGroup>
         </FormControl>
       </Box>
-      {getValueButtons()}
+      {getValueInputs()}
 
       <Box sx={{ border: "1px solid black", marginLeft: 2, marginRight: 2, minHeight: "2rem", marginTop: 2}}>
         <Typography sx={{textAlign: "center", marginTop: 0.5}}>{displayValue}</Typography>
