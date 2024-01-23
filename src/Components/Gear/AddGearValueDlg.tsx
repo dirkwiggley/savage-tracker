@@ -278,7 +278,6 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       }
       // find the attribute types
       for (let i = 0; i < referencedEffect?.values.length; i++) {
-        // let currentValue = currentEffectCfg?.values[i];
         let currentValue = referencedEffect?.values[i];
         if (isAttributeName(currentValue as string)) {
           if (display !== "") {
@@ -368,7 +367,8 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
           <RadioGroup
             aria-label="value-type-group-label"
             defaultValue={DICE}
-            name="value-button-group">
+            name="value-button-group"
+            value={currentSelectedValueType}>
             <FormControlLabel onChange={() => handleSelectedValueTypeChange(DICE)} value="dice" control={<Radio />} label="Dice" sx={{ marginTop: -1 }} />
             <FormControlLabel onChange={() => handleSelectedValueTypeChange(ATTRIBUTE)} value="attribute" control={<Radio />} label="Attribute" sx={{ marginTop: -1 }} />
             <FormControlLabel onChange={() => handleSelectedValueTypeChange(NUMBER)} value="number" control={<Radio />} label="Number" sx={{ marginTop: -1 }} />
