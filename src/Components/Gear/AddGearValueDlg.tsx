@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Input, Radio, RadioGroup, Typography, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, DiceType, EffectValueType, findGearEffectCfgIndexByTypeName, GearEffectConfig, GearEffectType, GearType, getWhenUsed, isValidGearEffectCfg } from "./GearData";
+import { allGearEffectTypes, DiceType, EffectValueType, findGearEffectCfgIndexByTypeName, GearEffectConfig, GearEffectType, GearType, isValidGearEffectCfg } from "./GearData";
 import { AttributeNameType, allAttributeNames, isAttributeName, isAttributeNameType } from "../Attributes/AttribPanel";
 import { DiceNameType, allDiceNames, isDiceType } from "../Dice";
 

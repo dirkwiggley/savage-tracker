@@ -63,6 +63,18 @@ export const getDefaultCharacter = (): CharDataType => {
   const diceType: DiceType = { diceName: D4, quantity: 1};
   newChar.gear = [
     {
+      name: "Hands", 
+      effects: [
+        { 
+          typeName: GEAR_MELEE_DAMAGE, 
+          values: [
+            STR
+          ]
+        }        
+      ],
+      equipped: true
+    },
+    {
       name: "Dagger", 
       effects: [
         { 
@@ -73,8 +85,7 @@ export const getDefaultCharacter = (): CharDataType => {
               quantity: 1
             }, 
             STR
-          ], 
-          whenUsed: COMBAT_MELEE
+          ]
         },
         { 
           typeName: GEAR_THROWING_DAMAGE, 
@@ -85,7 +96,6 @@ export const getDefaultCharacter = (): CharDataType => {
             }, 
             STR
           ], 
-          whenUsed: COMBAT_THROWING
         }        
       ],
       equipped: true

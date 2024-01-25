@@ -28,6 +28,7 @@ const GearPanel = () => {
   const [currentStep, setCurrentStep] = useState<stepType>(UNKNOWN_STEP);
   const [gearName, setGearName] = useState<string | null>(null);
   const [gearEffectCfgs, setGearEffectCfgs] = useState<Array<GearEffectConfig>>([]);
+  const [removeGear, setRemoveGear] = useState<boolean>(false);
 
   useEffect(() => {
     switch (currentStep) {
@@ -70,11 +71,13 @@ const GearPanel = () => {
     }
 
     const handleCloseNewGearNameDlg = (newGearName: string | null = null) => {
-      if (newGearName) {
+      if (newGearName && newGearName !== "") {
         setGearName(newGearName);
+        setCurrentStep(EFFECT_STEP);
+      } else {
+        setCurrentStep(UNKNOWN_STEP);
       }
       setOpenNewGearNameDlg(false);
-      setCurrentStep(EFFECT_STEP);
     }
 
     const handleCloseAddEffectDlg = (effects: Array<GearEffectConfig> | null = null) => {
@@ -82,7 +85,9 @@ const GearPanel = () => {
         setGearEffectCfgs(effects);
         setCurrentStep(VALUE_STEP);
       } else {
+        setGearEffectCfgs([]);
         setOpenAddGearEffectDlg(false);
+        setCurrentStep(UNKNOWN_STEP);
       }
     }
 
@@ -111,6 +116,7 @@ const GearPanel = () => {
         setOpenAddGearValueDlg(false);
       } 
       setCurrentStep(UNKNOWN_STEP);
+      setGearEffectCfgs([]);
     }
 
     const toggleEquipGear = (gearName: string) => {
@@ -127,6 +133,18 @@ const GearPanel = () => {
         }
       });
       setChar(newChar);
+    }
+
+    const handleClickRemove = () => {
+      setRemoveGear(!removeGear);
+    }
+
+    const handleGearClick = (gearName: string) => {
+      if (removeGear) {
+        handleRemoveGear(gearName);
+      } else {
+        toggleEquipGear(gearName);
+      }
     }
 
     const handleRemoveGear = (gearName: string) => {
@@ -147,7 +165,7 @@ const GearPanel = () => {
         char.gear.forEach((gear, index) => {
           gearArray.push(
             <div key={index} style={{ marginLeft: 5 }}>
-              <GearDisplay gear={gear} clickHandler={toggleEquipGear} />
+              <GearDisplay gear={gear} clickHandler={() => handleGearClick(gear.name)} />
             </div>)
         });
       }
@@ -170,6 +188,31 @@ const GearPanel = () => {
           }}
         >
           <Typography variant="body2" fontWeight={900}>Add Gear</Typography>
+        </Button>
+      );
+    }
+
+    const getRemoveGearBtnColor = () => {
+      if (removeGear) return grey[400];
+      return grey[300];
+    }
+
+    const getRemoveGearBtn = () => {
+      if (char.locked) return null;
+      return (
+        <Button
+          onClick={handleClickRemove}
+          variant="contained"
+          style={{
+            marginLeft: 5,
+            marginRight: 5,
+            marginTop: "10px",
+            backgroundColor: getRemoveGearBtnColor(),
+            color: "black",
+            borderRadius: "15px 15px 15px 15px"
+          }}
+        >
+          <Typography variant="body2" fontWeight={900}>Remove Gear</Typography>
         </Button>
       );
     }
@@ -218,21 +261,10 @@ const GearPanel = () => {
             </Box>
 
             {getDialog()}
-            {/* <NewGearNameDlg 
-              openDlg={openNewGearNameDlg} 
-              closeDlg={handleCloseNewGearNameDlg} />
-            <AddGearEffectDlg 
-              openDlg={openAddGearEffectDlg} 
-              closeDlg={handleCloseAddEffectDlg} />
-            <AddGearValueDlg 
-              openDlg={openAddGearValueDlg} 
-              closeDlg={handleCloseGearValueDlg} 
-              gearName={gearName ? gearName : ""} 
-              gearEffectCfgs={gearEffectCfgs ? gearEffectCfgs : []} /> */}
             {getGear()}
 
             {getAddGearBtn()}
-
+            {getRemoveGearBtn()}
             <LockCharacterBtn />
 
             <Divider style={{ marginTop: 5, marginBottom: 5 }} />

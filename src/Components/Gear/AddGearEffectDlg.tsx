@@ -53,15 +53,18 @@ const AddGearEffectDlg = (props: AddGearEffectProps) => {
     let newEffectCfg: GearEffectConfig = {
       typeName: effectType,
       values: [],
-      whenUsed: getWhenUsed(effectType)
     }
     const newEffects: Array<GearEffectConfig> = newGearEffectCfgs ? [...newGearEffectCfgs] : [];
     newEffects.push(newEffectCfg);
     setNewGearEffectCfgs(newEffects);
   }
 
-  const handleCloseAddGearEffectDlg =  () => {
+  const handleNext = () => {
     closeDlg(newGearEffectCfgs);
+  }
+
+  const handleCloseAddGearEffectDlg =  () => {
+    closeDlg();
   }
   
   return (
@@ -70,7 +73,8 @@ const AddGearEffectDlg = (props: AddGearEffectProps) => {
       <>
         {effectButtons}
       </>
-      <StyledButton onClick={handleCloseAddGearEffectDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
+      <StyledButton onClick={handleNext} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Next</StyledButton>
+      <StyledButton onClick={handleCloseAddGearEffectDlg} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
     </Dialog>
   );
 }

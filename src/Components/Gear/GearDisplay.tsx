@@ -18,7 +18,7 @@ const GearDisplay = (props: GearParentPropTypes) => {
     let effectString = "";
     for (let index = 0; index < gear.effects.length; index++) {
       const effect = gear.effects[index];
-      effectString += effect.typeName + " ";
+      effectString += effect.typeName + ": ";
       effect.values?.forEach((value: EffectValueType, index: number) => {
         if (index > 0) {
           effectString += " + ";
@@ -34,7 +34,6 @@ const GearDisplay = (props: GearParentPropTypes) => {
           alert("Bad Gear Type");
         }
       });
-      effectString += " " + effect.whenUsed;
       if (index < gear.effects.length - 1) {
         effectString += " | ";
       }

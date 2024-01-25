@@ -10,6 +10,8 @@ import { AppContext } from "../AppContextProvider";
 import { EffectNameType, EffectPropType } from "../Effects/Effects";
 import UpPanel from "../UpPanel";
 import DownPanel from "../DownPanel";
+import { AllAttackTypes, GearEffectConfig, GearType, getWhenUsed } from "../Gear/GearData";
+import AttackDlg from "./AttackDlg";
 
 export const AGI = "AGI";
 export const SMA = "SMA";
@@ -24,8 +26,8 @@ const ActionsPanel = () => {
   const [turnCounter, setTurnCounter] = useState<number>(0);
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMsg, setSnackbarMsg] = useState<String | null>(null);
-
-  let navigate = useNavigate();
+  const [usableGear, setUsableGear] = useState<Array<GearType>>([]);
+  const [openAttackDlg, setOpenAttackDlg] = useState<boolean>(false);
 
   useEffect(() => {
     let newCounter = 0;
@@ -90,6 +92,27 @@ const ActionsPanel = () => {
     setOpenSnackbar(false);
   }
 
+  const handleCloseAttackDlg = () => {
+    setOpenAttackDlg(false);
+  }
+
+  const handleAttackClicked = () => {
+    const attackGear: Array<GearType> = [];
+    char.gear.forEach(gear => {
+      if (gear.equipped) {
+        for (let i = 0; i < gear.effects.length; i++) {
+          const effect = gear.effects[i];
+          if (AllAttackTypes.includes(effect.typeName) && !attackGear.includes(gear)) {
+            attackGear.push(gear);
+            continue;
+          }
+        }
+      }
+    });
+    setUsableGear(attackGear);
+    setOpenAttackDlg(true);
+  }
+
   const getMobile = () => {
     return (
       <MobileBox>
@@ -111,6 +134,8 @@ const ActionsPanel = () => {
               <Typography variant="h4" fontWeight={900}>Actions</Typography>
             </Box>
 
+            <AttackDlg gearList={usableGear} openDlg={openAttackDlg} closeDlg={handleCloseAttackDlg} />
+
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "10px", marginBottom: "10px" }}>
               <Tooltip title={"Attack"}>
                 <Button 
@@ -121,7 +146,8 @@ const ActionsPanel = () => {
                     background: grey[200], 
                     borderRadius: "60px 0 0 60px", 
                     marginRight: 10, 
-                    color: "black" }}>
+                    color: "black" }}
+                    onClick={handleAttackClicked}>
                       Attack
                 </Button>
               </Tooltip>

@@ -1,14 +1,14 @@
 import { AttributeNameType, isAttributeName } from "../Attributes/AttribPanel";
 import { DiceNameType } from "../Dice";
 
-export const COMBAT_MELEE = "combat melee";
-export const COMBAT_SHOOTING = "combat shooting";
-export const COMBAT_THROWING = "combat throwing";
-export const COMBAT_AREA = "combat area";
-export const MOVEMENT = "movement";
-export const CASTING = "casting";
-export const SKILL_CHECK = "skill check";
-export const DEFENSE = "defense";
+export const COMBAT_MELEE = "Melee";
+export const COMBAT_SHOOTING = "Shooting";
+export const COMBAT_THROWING = "Throwing";
+export const COMBAT_AREA = "Area";
+export const MOVEMENT = "Movement";
+export const CASTING = "Casting";
+export const SKILL_CHECK = "Skill Check";
+export const DEFENSE = "Defense";
 export type WhenType = typeof COMBAT_MELEE | typeof COMBAT_SHOOTING | typeof COMBAT_THROWING | typeof COMBAT_AREA | typeof MOVEMENT | typeof CASTING | typeof SKILL_CHECK | typeof DEFENSE;
 export const ALL_WHEN_TYPES: Array<WhenType> = [COMBAT_MELEE, COMBAT_SHOOTING, COMBAT_THROWING, COMBAT_AREA, MOVEMENT, CASTING, SKILL_CHECK];
 export const GEAR_TOUGHNESS = "Toughness";
@@ -57,12 +57,15 @@ export const getWhenUsed = (gearEffectType: GearEffectType): WhenType => {
       return COMBAT_MELEE;
   }
 }
+export const AllAttackTypes: Array<GearEffectType> = [GEAR_MELEE_DAMAGE, GEAR_SHOOTING_DAMAGE, GEAR_THROWING_DAMAGE, GEAR_AREA_DAMAGE];
+export const AllDefenseTypes: Array<GearEffectType> = [GEAR_TOUGHNESS, GEAR_ARMOR, GEAR_PARRY, GEAR_DODGE];
+export const AllSkillTypes: Array<GearEffectType> = [GEAR_SKILL];
+
 export type EffectValueType = number | DiceType | AttributeNameType;
 
 export type GearEffectConfig = {
   typeName: GearEffectType;
   values: Array<EffectValueType>;
-  whenUsed?: WhenType;
 }
 
 export type GearType = {
@@ -106,6 +109,5 @@ export const findGearEffectCfgValueByType = (gearEffectConfig: GearEffectConfig,
 export const isValidGearEffectCfg = (gearEffectConfig: GearEffectConfig): boolean => {
   if (!gearEffectConfig.typeName || !(gearEffectConfig.typeName.length > 2)) return false;
   if (!gearEffectConfig.values || gearEffectConfig.values.length === 0) return false;
-  if (!gearEffectConfig.whenUsed) return false;
   return true;
 }
