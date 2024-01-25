@@ -4,7 +4,6 @@ import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
 import GearDisplay from "./GearDisplay";
 import { useContext, useEffect, useState } from "react";
-import { CharDataType } from "../CharStore/CharData";
 import { GearEffectConfig, GearEffectType, GearType } from "./GearData";
 import { AppContext } from "../AppContextProvider";
 import AddGearEffectDlg from "./AddGearEffectDlg";
@@ -104,13 +103,14 @@ const GearPanel = () => {
       }
     }
 
-    const handleCloseGearValueDlg = (values: Array<GearType> | null = null) => {
-      if (values && values.length > 0) {
+    const handleCloseGearValueDlg = (newGear: GearType | null = null) => {
+      if (newGear) {
+        let newChar = {...char};
+        newChar.gear.push(newGear);
+        setChar(newChar);
         setOpenAddGearValueDlg(false);
-        // TODO: More!
-      } else {
-        setCurrentStep(UNKNOWN_STEP);
-      }
+      } 
+      setCurrentStep(UNKNOWN_STEP);
     }
 
     const toggleEquipGear = (gearName: string) => {

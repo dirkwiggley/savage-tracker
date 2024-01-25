@@ -113,13 +113,42 @@ const ActionsPanel = () => {
 
             <div style={{ display: "flex", justifyContent: "center", alignItems: "center", marginTop: "10px", marginBottom: "10px" }}>
               <Tooltip title={"Attack"}>
-                <Button style={{ width: "60px", height: "60px", background: "#34d5eb", borderRadius: "60px 0 0 60px", marginRight: 10, color: "black" }}>Attack</Button>
+                <Button 
+                  variant="contained"
+                  style={{ 
+                    width: "60px", 
+                    height: "60px", 
+                    background: grey[200], 
+                    borderRadius: "60px 0 0 60px", 
+                    marginRight: 10, 
+                    color: "black" }}>
+                      Attack
+                </Button>
               </Tooltip>
               <Tooltip title={"Skill Check"}>
-                <Button style={{ width: "60px", height: "60px", background: "white", borderRadius: "0", marginRight: 10, color: "black" }}>Skill</Button>
+                <Button 
+                  variant="contained"
+                  style={{ 
+                    width: "60px", 
+                    height: "60px", 
+                    background: grey[200], 
+                    borderRadius: "0", 
+                    marginRight: 10, 
+                    color: "black" }}>
+                      Skill
+                </Button>
               </Tooltip>
               <Tooltip title={"Defend"}>
-                <Button style={{ width: "60px", height: "60px", background: "#eb5c34", borderRadius: "0 60px 60px 0", color: "black" }}>Defend</Button>
+                <Button 
+                  variant="contained"
+                  style={{ 
+                    width: "60px", 
+                    height: "60px", 
+                    background: grey[200], 
+                    borderRadius: "0 60px 60px 0", 
+                    color: "black"}}>
+                      Defend
+                </Button>
               </Tooltip>
             </div>
 

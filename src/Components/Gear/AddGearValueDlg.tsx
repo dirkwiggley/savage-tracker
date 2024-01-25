@@ -2,7 +2,7 @@ import { useContext, useEffect, useMemo, useRef, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, FormControlLabel, FormLabel, Input, Radio, RadioGroup, Typography, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, DiceType, EffectValueType, findGearEffectCfgIndexByTypeName, GearEffectConfig, GearEffectType, GearType, getWhenUsed } from "./GearData";
+import { allGearEffectTypes, DiceType, EffectValueType, findGearEffectCfgIndexByTypeName, GearEffectConfig, GearEffectType, GearType, getWhenUsed, isValidGearEffectCfg } from "./GearData";
 import { AttributeNameType, allAttributeNames, isAttributeName, isAttributeNameType } from "../Attributes/AttribPanel";
 import { DiceNameType, allDiceNames, isDiceType } from "../Dice";
 
@@ -24,17 +24,15 @@ type AddGearValueDlgProps = {
   openDlg: boolean,
   gearName: string,
   gearEffectCfgs: Array<GearEffectConfig>,
-  closeDlg: (values?: Array<GearType> | null) => void;
+  closeDlg: (newGear?: GearType | null) => void;
 }
 
 const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   const { openDlg, closeDlg, gearName, gearEffectCfgs } = props;
-  const [char, setChar] = useContext(AppContext)!;
   const [newGearName, setNewGearName] = useState<string>(gearName);
   const [newGearEffectCfgs, setNewGearEffectCfgs] = useState<Array<GearEffectConfig>>(gearEffectCfgs);
   const [currentEffectCfg, setCurrentEffectCfg] = useState<GearEffectConfig>({...gearEffectCfgs[0]});
   const [currentSelectedValueType, setCurrentSelectedValueType] = useState<SelectedValueType>(DICE);
-  const [gear, setGear] = useState<GearType | null>(null);
   const [displayValue, setDisplayValue] = useState<string>("");
   const [openClearDlg, setOpenClearDlg] = useState<boolean>(false);
 
@@ -332,6 +330,25 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     setOpenClearDlg(false);
   }
 
+  const createGear = () => {
+    if (gearEffectCfgs.length < 1) {
+      alert("There is not enough information to create this gear.");
+      return;
+    }
+    for (let i = 0; i < gearEffectCfgs.length; i++) {
+      if (!isValidGearEffectCfg(gearEffectCfgs[i])) {
+        alert("There is not enough information to create this gear.");
+        return;
+      }
+    }
+    const newGear: GearType = {
+      name: newGearName,
+      effects: newGearEffectCfgs,
+      equipped: false
+    }
+    closeDlg(newGear);
+  }
+
   return (
     <Dialog onClose={handleCloseAddGearValueDlg} open={openDlg}>
       <Dialog
@@ -381,6 +398,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
         <Typography sx={{textAlign: "center", marginTop: 0.5}}>{displayValue}</Typography>
       </Box>
       <StyledButton onClick={checkBeforeOpenClearDlg} sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>Clear Values</StyledButton>
+      <StyledButton onClick={createGear} sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>Create Gear</StyledButton>
       <StyledButton onClick={handleCloseAddGearValueDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
     </Dialog>
   );

@@ -84,7 +84,8 @@ export const findGearEffectCfgValueByType = (gearEffectConfig: GearEffectConfig,
     for (let i = 0; i < gearEffectConfig.values.length; i++) {
       let currentValue = gearEffectConfig.values[i] as DiceType;
       const diceName: DiceNameType = currentValue.diceName;
-      if (diceName === value.diceName) return currentValue;
+      const diceNumber: number = currentValue.quantity;
+      if (diceName === value.diceName && diceNumber > 0) return currentValue;
     }
   } else if (isAttributeName(value)) {
     for (let i = 0; gearEffectConfig.values.length; i++) {
@@ -100,4 +101,11 @@ export const findGearEffectCfgValueByType = (gearEffectConfig: GearEffectConfig,
     console.error("Invalid effectValueType");
   }
   return;
+}
+
+export const isValidGearEffectCfg = (gearEffectConfig: GearEffectConfig): boolean => {
+  if (!gearEffectConfig.typeName || !(gearEffectConfig.typeName.length > 2)) return false;
+  if (!gearEffectConfig.values || gearEffectConfig.values.length === 0) return false;
+  if (!gearEffectConfig.whenUsed) return false;
+  return true;
 }
