@@ -100,7 +100,7 @@ const AttackDlg = (props: AttackDlgProps) => {
     }
     let skillsDie = findCharSkillDie(skillName);
     const modifiers = getAttackModifiers(gearNameWhenType);
-    if (modifiers[0].type === PREVENTS) {
+    if (modifiers && modifiers.length > 1 && modifiers[0].type === PREVENTS) {
       setAttackRoll(`Attack is not possible while under the ${modifiers[0].name} effect`);
     } else {
       let total: number = 0;
@@ -113,9 +113,9 @@ const AttackDlg = (props: AttackDlgProps) => {
       });
       let displayValue = `Best of: ${skillsDie} (skill) or d6 (wild die)`;
       if (total > 0) {
-        displayValue += ` +${total}`;
+        displayValue += ` +${total} (bonus)`;
       } else if (total < 0) {
-        displayValue += ` ${total}`;
+        displayValue += ` ${total} (penalty)`;
       }
       setAttackRoll(displayValue);
     }
