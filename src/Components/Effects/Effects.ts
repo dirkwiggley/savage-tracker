@@ -1,3 +1,5 @@
+import { COMBAT_AREA, COMBAT_MELEE, COMBAT_SHOOTING, COMBAT_THROWING, DEFENSE, SKILL_CHECK, WhenType } from "../Gear/GearData";
+
 export const BOUND = "Bound";
 export const COVER_LIGHT = "Light Cover";
 export const COVER_MEDIUM = "Medium Cover";
@@ -40,23 +42,27 @@ export type EffectNameType = typeof SHAKEN | typeof DEFEND | typeof WOUNDED_1 | 
   typeof FATIGUED | typeof FATIGUED_EXHAUSTED | typeof BOUND | typeof ENTANGLED | typeof COVER_LIGHT | typeof COVER_MEDIUM | 
   typeof COVER_HEAVY | typeof COVER_NEAR_TOTAL;
 
-export const SITUATION_ATTACK = "Attack";
-export const SITUATION_ATTACK_MELEE = "Attack Melee";
-export const SITUATION_ATTACK_RANGED = "Attack Ranged";
-export const SITUATION_SKILL = "Skill";
-export const SITUATION_DEFEND = "Defend";
-export const SITUATION_DEFEND_MELEE = "Defend Melee";
-export const SITUATION_DEFEND_RANGED = "Defend Ranged";
-export type EffectSituationName = typeof SITUATION_ATTACK | typeof SITUATION_ATTACK_MELEE | typeof SITUATION_ATTACK_RANGED | 
-  typeof SITUATION_SKILL | typeof SITUATION_DEFEND | typeof SITUATION_DEFEND_MELEE | typeof SITUATION_DEFEND_RANGED;
+// export const SITUATION_ATTACK = "Attack";
+// export const SITUATION_ATTACK_MELEE = "Melee";
+// export const SITUATION_ATTACK_SHOOTING = "Shooting";
+// export const SITUATION_ATTACK_THROWING = "Throwing"
+// export const SITUATION_ATTACK_AREA = "Area"
+// export const SITUATION_SKILL = "Skill";
+// export const SITUATION_DEFEND = "Defend";
+// export const SITUATION_DEFEND_MELEE = "Defend Melee";
+// export const SITUATION_DEFEND_RANGED = "Defend Ranged";
+// export type EffectSituationName = typeof SITUATION_ATTACK | typeof SITUATION_ATTACK_MELEE | typeof SITUATION_ATTACK_SHOOTING | 
+//   typeof SITUATION_ATTACK_THROWING | typeof SITUATION_ATTACK_AREA | typeof SITUATION_SKILL | typeof SITUATION_DEFEND | 
+//   typeof SITUATION_DEFEND_MELEE | typeof SITUATION_DEFEND_RANGED;
 
 export const BONUS = "Bonus";
 export const PENALTY = "Penalty";
+export const PREVENTS = "Prevents";
 export const OTHER = "Other";
-export type EffectType = typeof BONUS | typeof PENALTY | typeof OTHER;
+export type EffectType = typeof BONUS | typeof PENALTY | typeof PREVENTS | typeof OTHER;
 
 export type EffectSituationType = {
-  situation: EffectSituationName;
+  when: WhenType;
   value: number;
   effectType: EffectType;
 }
@@ -74,180 +80,260 @@ export type DurationType = {
 }
 export type EffectPropType = {
   name: EffectNameType;
-  situations: Array<EffectSituationType>;
+  effects: Array<EffectSituationType>;
   duration: DurationType;
   remove?: Array<EffectNameType>;
 }
 
 export const effectsArray: Array<EffectPropType> = [
-  {name: SHAKEN, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: OTHER, value: 0},
-    {situation: SITUATION_SKILL, effectType: OTHER, value: 0},
-    {situation: SITUATION_DEFEND, effectType: OTHER, value: 0},
+  {name: SHAKEN, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+    {when: COMBAT_SHOOTING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_THROWING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_AREA, effectType: PREVENTS, value: 0},
+    {when: SKILL_CHECK, effectType: PREVENTS, value: 0},
+    {when: DEFENSE, effectType: OTHER, value: 0},
   ]},
-  {name: DEFEND, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: OTHER, value: 0},
-    {situation: SITUATION_SKILL, effectType: OTHER, value: 0},
-    {situation: SITUATION_DEFEND, effectType: BONUS, value: 4},
+  {name: DEFEND, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: OTHER, value: 0},
+    {when: COMBAT_SHOOTING, effectType: OTHER, value: 0},
+    {when: COMBAT_THROWING, effectType: OTHER, value: 0},
+    {when: COMBAT_AREA, effectType: PREVENTS, value: 0},
+    {when: SKILL_CHECK, effectType: OTHER, value: 0},
+    {when: DEFENSE, effectType: BONUS, value: 4},
   ]},
   {name: WOUNDED_1, duration: {desc: DURATION_SPECIAL}, remove: [
       WOUNDED_2, WOUNDED_3, WOUNDED_4],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 1},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 1},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 1},
+    effects: [
+    {when: COMBAT_MELEE, effectType: PENALTY, value: 1},
+    {when: COMBAT_SHOOTING, effectType: PENALTY, value: 1},
+    {when: COMBAT_THROWING, effectType: PENALTY, value: 1},
+    {when: COMBAT_AREA, effectType: PENALTY, value: 1},    
+    {when: SKILL_CHECK, effectType: PENALTY, value: 1},
+    {when: DEFENSE, effectType: PENALTY, value: 1},
   ]},
   {name: WOUNDED_2, duration: {desc: DURATION_SPECIAL}, remove: [
     WOUNDED_1, WOUNDED_3, WOUNDED_4],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 2},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 2},
+    effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 1},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 2},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 2},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 2},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 2},
+    {when: DEFENSE, effectType: PENALTY, value: 2},
   ]},
   {name: WOUNDED_3, duration: {desc: DURATION_SPECIAL}, remove: [
     WOUNDED_1, WOUNDED_2, WOUNDED_4], 
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 3},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 3},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 3},
+    effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 3},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 3},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 3},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 3},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 3},
+    {when: DEFENSE, effectType: PENALTY, value: 3},
   ]},
   {name: WOUNDED_4, duration: {desc: DURATION_SPECIAL}, remove: [
     WOUNDED_1, WOUNDED_2, WOUNDED_3], 
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 4},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 4},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 4},
+    effects: [
+      {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+      {when: COMBAT_SHOOTING, effectType: PREVENTS, value: 0},
+      {when: COMBAT_THROWING, effectType: PREVENTS, value: 0},
+      {when: COMBAT_AREA, effectType: PREVENTS, value: 0},    
+      {when: SKILL_CHECK, effectType: PREVENTS, value: 0},
+    {when: DEFENSE, effectType: PREVENTS, value: 0},
   ]},
-  {name: DISTRACTED, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 2},
+  {name: DISTRACTED, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: PENALTY, value: 2},
+    {when: COMBAT_SHOOTING, effectType: PENALTY, value: 2},
+    {when: COMBAT_THROWING, effectType: PENALTY, value: 2},
+    {when: COMBAT_AREA, effectType: PENALTY, value: 2},    
+    {when: SKILL_CHECK, effectType: PENALTY, value: 2},
   ]},
-  {name: VULNERABLE, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 2},
+  {name: VULNERABLE, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: DEFENSE, effectType: PENALTY, value: 2},
   ]},
   {name: FATIGUED, duration: {desc: DURATION_SPECIAL}, remove: [
     FATIGUED_EXHAUSTED, FATIGUED_INCAPACITATED],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 1},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 1},
+    effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 1},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 1},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 1},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 1},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 1},
   ]},
   {name: FATIGUED_EXHAUSTED, duration: {desc: DURATION_SPECIAL}, 
-    remove: [FATIGUED, FATIGUED_INCAPACITATED], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 2},
+    remove: [FATIGUED, FATIGUED_INCAPACITATED], effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 2},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 2},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 2},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 2},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 2},
   ]},
   {name: FATIGUED_INCAPACITATED, duration: {desc: DURATION_SPECIAL}, 
-    remove: [FATIGUED, FATIGUED_EXHAUSTED], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 2},
+    remove: [FATIGUED, FATIGUED_EXHAUSTED], effects: [
+      {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+      {when: COMBAT_SHOOTING, effectType: PREVENTS, value: 0},
+      {when: COMBAT_THROWING, effectType: PREVENTS, value: 0},
+      {when: COMBAT_AREA, effectType: PREVENTS, value: 0},    
+      {when: SKILL_CHECK, effectType: PREVENTS, value: 0},
   ]},
-  {name: THE_DROP, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: BONUS, value: 4},
+  {name: THE_DROP, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: BONUS, value: 4},
+    {when: COMBAT_SHOOTING, effectType: BONUS, value: 4},
+    {when: COMBAT_THROWING, effectType: BONUS, value: 4},
+    {when: COMBAT_AREA, effectType: BONUS, value: 4},    
   ]},
   {name: GANG_UP_1, duration: {desc: DURATION_SPECIAL}, remove: [
-    GANG_UP_2, GANG_UP_3, GANG_UP_4], situations: [
-    {situation: SITUATION_ATTACK, effectType: BONUS, value: 1},
-  ]},
+    GANG_UP_2, GANG_UP_3, GANG_UP_4], effects: [
+      {when: COMBAT_MELEE, effectType: BONUS, value: 1},
+      {when: COMBAT_SHOOTING, effectType: BONUS, value: 1},
+      {when: COMBAT_THROWING, effectType: BONUS, value: 1},
+      {when: COMBAT_AREA, effectType: BONUS, value: 1},    
+    ]},
   {name: GANG_UP_2, duration: {desc: DURATION_SPECIAL}, remove: [
-    GANG_UP_1, GANG_UP_3, GANG_UP_4], situations: [
-    {situation: SITUATION_ATTACK, effectType: BONUS, value: 2},
+    GANG_UP_1, GANG_UP_3, GANG_UP_4], effects: [
+      {when: COMBAT_MELEE, effectType: BONUS, value: 2},
+      {when: COMBAT_SHOOTING, effectType: BONUS, value: 2},
+      {when: COMBAT_THROWING, effectType: BONUS, value: 2},
+      {when: COMBAT_AREA, effectType: BONUS, value: 2},    
   ]},
   {name: GANG_UP_3, duration: {desc: DURATION_SPECIAL}, remove: [
-    GANG_UP_1, GANG_UP_2, GANG_UP_4], situations: [
-    {situation: SITUATION_ATTACK, effectType: BONUS, value: 3},
+    GANG_UP_1, GANG_UP_2, GANG_UP_4], effects: [
+      {when: COMBAT_MELEE, effectType: BONUS, value: 3},
+      {when: COMBAT_SHOOTING, effectType: BONUS, value: 3},
+      {when: COMBAT_THROWING, effectType: BONUS, value: 3},
+      {when: COMBAT_AREA, effectType: BONUS, value: 3},    
   ]},
   {name: GANG_UP_4, duration: {desc: DURATION_SPECIAL}, remove: [
-    GANG_UP_1, GANG_UP_2, GANG_UP_3], situations: [
-    {situation: SITUATION_ATTACK, effectType: BONUS, value: 4},
+    GANG_UP_1, GANG_UP_2, GANG_UP_3], effects: [
+      {when: COMBAT_MELEE, effectType: BONUS, value: 4},
+      {when: COMBAT_SHOOTING, effectType: BONUS, value: 4},
+      {when: COMBAT_THROWING, effectType: BONUS, value: 4},
+      {when: COMBAT_AREA, effectType: BONUS, value: 4},    
   ]},
   {name: ILLUMINATION_DIM, duration: {desc: DURATION_SPECIAL}, 
-    remove: [ILLUMINATION_DARK, ILLUMINATION_PITCH_DARK], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 2},
+    remove: [ILLUMINATION_DARK, ILLUMINATION_PITCH_DARK], effects: [
+    {when: COMBAT_MELEE, effectType: PENALTY, value: 2},
+    {when: COMBAT_SHOOTING, effectType: PENALTY, value: 2},
+    {when: COMBAT_THROWING, effectType: PENALTY, value: 2},
+    {when: COMBAT_AREA, effectType: PENALTY, value: 2},    
+    {when: SKILL_CHECK, effectType: PENALTY, value: 2},
   ]},
   {name: ILLUMINATION_DARK, duration: {desc: DURATION_SPECIAL}, 
-    remove: [ILLUMINATION_DIM, ILLUMINATION_PITCH_DARK], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 4},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 4},
+    remove: [ILLUMINATION_DIM, ILLUMINATION_PITCH_DARK], effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 4},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 4},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 4},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 4},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 4},
   ]},
   {name: ILLUMINATION_PITCH_DARK, duration: {desc: DURATION_SPECIAL}, 
-    remove: [ILLUMINATION_DIM, ILLUMINATION_DARK], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 6},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 6},
+    remove: [ILLUMINATION_DIM, ILLUMINATION_DARK], effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 6},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 6},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 6},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 6},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 6},
   ]},
   {name: MULTI_ACTION_1, duration: {desc: DURATION_INSTANT, value: 1}, 
-    remove: [MULTI_ACTION_2], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 2},
+    remove: [MULTI_ACTION_2], effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 2},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 2},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 2},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 2},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 2},
   ]},
   {name: MULTI_ACTION_2, duration: {desc: DURATION_INSTANT, value: 1}, 
-    remove: [MULTI_ACTION_1], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 4},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 4},
+    remove: [MULTI_ACTION_1], effects: [
+      {when: COMBAT_MELEE, effectType: PENALTY, value: 4},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 4},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 4},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 4},    
+      {when: SKILL_CHECK, effectType: PENALTY, value: 4},
   ]},
   {name: RANGE_SHORT, duration: {desc: DURATION_SPECIAL, value: 0}, 
-    remove: [RANGE_MEDIUM, RANGE_LONG, RANGE_EXTREME], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 0},
+    remove: [RANGE_MEDIUM, RANGE_LONG, RANGE_EXTREME], effects: [
+      {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 0},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 0},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 0},    
   ]},
   {name: RANGE_MEDIUM, duration: {desc: DURATION_SPECIAL, value: 0}, 
-  remove: [RANGE_SHORT, RANGE_LONG, RANGE_EXTREME], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
+  remove: [RANGE_SHORT, RANGE_LONG, RANGE_EXTREME], effects: [
+    {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+    {when: COMBAT_SHOOTING, effectType: PENALTY, value: 2},
+    {when: COMBAT_THROWING, effectType: PENALTY, value: 2},
+    {when: COMBAT_AREA, effectType: PENALTY, value: 2},    
   ]},
   {name: RANGE_LONG, duration: {desc: DURATION_SPECIAL, value: 0}, 
-    remove: [RANGE_SHORT, RANGE_MEDIUM, RANGE_EXTREME], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 4},
+    remove: [RANGE_SHORT, RANGE_MEDIUM, RANGE_EXTREME], effects: [
+      {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 4},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 4},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 4},    
   ]},
   {name: RANGE_EXTREME, duration: {desc: DURATION_SPECIAL, value: 0},
-    remove: [RANGE_SHORT, RANGE_MEDIUM, RANGE_LONG], situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 8},
+    remove: [RANGE_SHORT, RANGE_MEDIUM, RANGE_LONG], effects: [
+      {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+      {when: COMBAT_SHOOTING, effectType: PENALTY, value: 8},
+      {when: COMBAT_THROWING, effectType: PENALTY, value: 8},
+      {when: COMBAT_AREA, effectType: PENALTY, value: 8},    
   ]},
-  {name: PRONE, duration: {desc: DURATION_SPECIAL, value: 0}, situations: [
-    {situation: SITUATION_ATTACK_MELEE, effectType: PENALTY, value: 2},
-    {situation: SITUATION_DEFEND_MELEE, effectType: PENALTY, value: 2},
-    {situation: SITUATION_DEFEND_RANGED, effectType: BONUS, value: 4},
+  {name: PRONE, duration: {desc: DURATION_SPECIAL, value: 0}, effects: [
+    {when: COMBAT_MELEE, effectType: PENALTY, value: 2},
+    // {when: SITUATION_DEFEND_MELEE, effectType: PENALTY, value: 2},
+    // {when: SITUATION_DEFEND_RANGED, effectType: BONUS, value: 4},
   ]},
-  {name: STUNNED, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 0},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 0},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 0},
+  {name: STUNNED, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+    {when: COMBAT_SHOOTING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_THROWING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_AREA, effectType: PREVENTS, value: 0},    
+    {when: SKILL_CHECK, effectType: PENALTY, value: 0},
+    {when: DEFENSE, effectType: PENALTY, value: 0},
   ]},
-  {name: JOKER, duration: {desc: DURATION_INSTANT}, situations: [
-    {situation: SITUATION_ATTACK, effectType: BONUS, value: 2},
-    {situation: SITUATION_SKILL, effectType: BONUS, value: 2},
+  {name: JOKER, duration: {desc: DURATION_INSTANT}, effects: [
+    {when: COMBAT_MELEE, effectType: BONUS, value: 2},
+    {when: COMBAT_SHOOTING, effectType: BONUS, value: 2},
+    {when: COMBAT_THROWING, effectType: BONUS, value: 2},
+    {when: COMBAT_AREA, effectType: BONUS, value: 2},    
+    {when: SKILL_CHECK, effectType: BONUS, value: 2},
   ]},
-  {name: BOUND, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 0},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 0},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 0},
+  {name: BOUND, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+    {when: COMBAT_SHOOTING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_THROWING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_AREA, effectType: PREVENTS, value: 0},    
+    {when: SKILL_CHECK, effectType: PENALTY, value: 0},
+    {when: DEFENSE, effectType: PENALTY, value: 0},
   ]},
-  {name: ENTANGLED, duration: {desc: DURATION_SPECIAL}, situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 0},
-    {situation: SITUATION_SKILL, effectType: PENALTY, value: 0},
-    {situation: SITUATION_DEFEND, effectType: PENALTY, value: 0},
+  {name: ENTANGLED, duration: {desc: DURATION_SPECIAL}, effects: [
+    {when: COMBAT_MELEE, effectType: PREVENTS, value: 0},
+    {when: COMBAT_SHOOTING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_THROWING, effectType: PREVENTS, value: 0},
+    {when: COMBAT_AREA, effectType: PREVENTS, value: 0},    
+    {when: SKILL_CHECK, effectType: PREVENTS, value: 0},
+    {when: DEFENSE, effectType: PREVENTS, value: 0},
   ]},
   {name: COVER_LIGHT, duration: {desc: DURATION_SPECIAL}, remove: [
       COVER_MEDIUM, COVER_HEAVY, COVER_NEAR_TOTAL],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 2},
-    {situation: SITUATION_DEFEND, effectType: BONUS, value: 2},
+    effects: [
+      {when: DEFENSE, effectType: BONUS, value: 2},
   ]},
   {name: COVER_MEDIUM, duration: {desc: DURATION_SPECIAL}, remove: [
     COVER_LIGHT, COVER_HEAVY, COVER_NEAR_TOTAL],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 4},
-    {situation: SITUATION_DEFEND, effectType: BONUS, value: 4},
+    effects: [
+    {when: DEFENSE, effectType: BONUS, value: 4},
   ]},
   {name: COVER_HEAVY, duration: {desc: DURATION_SPECIAL}, remove: [
     COVER_LIGHT, COVER_MEDIUM, COVER_NEAR_TOTAL],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 6},
-    {situation: SITUATION_DEFEND, effectType: BONUS, value: 6},
+    effects: [
+    {when: DEFENSE, effectType: BONUS, value: 6},
   ]},
   {name: COVER_NEAR_TOTAL, duration: {desc: DURATION_SPECIAL}, remove: [
     COVER_LIGHT, COVER_MEDIUM, COVER_HEAVY],
-    situations: [
-    {situation: SITUATION_ATTACK, effectType: PENALTY, value: 8},
-    {situation: SITUATION_DEFEND, effectType: BONUS, value: 8},
+    effects: [
+    {when: DEFENSE, effectType: BONUS, value: 8},
   ]},
 ]
 
