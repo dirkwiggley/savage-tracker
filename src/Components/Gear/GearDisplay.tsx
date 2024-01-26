@@ -21,7 +21,11 @@ const GearDisplay = (props: GearParentPropTypes) => {
       effectString += effect.typeName + ": ";
       effect.values?.forEach((value: EffectValueType, index: number) => {
         if (index > 0) {
-          effectString += " + ";
+          if (typeof value === 'number' && value < 0) {
+            effectString += " ";
+          } else {
+            effectString += " + ";
+          }
         }
         if (isDiceType(value)) {
           effectString += value.quantity + value.diceName;

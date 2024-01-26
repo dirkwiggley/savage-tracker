@@ -85,7 +85,7 @@ const NewGearNameDlg = (props: AddGearValueDlgProps) => {
       </DialogContent>
 
       <StyledButton onClick={handleSelect} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Select</StyledButton>
-      <StyledButton onClick={handleCloseNewGearNameDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
+      <StyledButton onClick={handleCloseNewGearNameDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Cancel</StyledButton>
     </Dialog>
   );
 

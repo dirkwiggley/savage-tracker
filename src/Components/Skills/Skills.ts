@@ -21,10 +21,11 @@ export const STEALTH = "Stealth";
 export const SURVIVAL = "Survival";
 export const TAUNT = "Taunt";
 export const THIEVERY = "Thievery";
+export const UNKNOWN = "Unknown";
 export type SkillNameType = typeof ATHLETICS | typeof COMMON_KNOWLEDGE | typeof FIGHTING | typeof FAITH | typeof GAMBLING | 
   typeof INTIMIDATION | typeof NOTICE | typeof OCCULT | typeof PERFORMANCE | typeof PERSUASION | typeof REPAIR | 
   typeof RESEARCH | typeof RIDING | typeof SCIENCE | typeof SHOOTING | typeof SPELLCASTING | typeof STEALTH | 
-  typeof SURVIVAL | typeof TAUNT | typeof THIEVERY;
+  typeof SURVIVAL | typeof TAUNT | typeof THIEVERY | typeof UNKNOWN;
 export const allSkillNames: Array<SkillNameType> = [ATHLETICS, COMMON_KNOWLEDGE, FIGHTING, FAITH, GAMBLING, INTIMIDATION,
   NOTICE, OCCULT, PERFORMANCE, PERSUASION, REPAIR, RESEARCH, RIDING, SCIENCE, SHOOTING, SPELLCASTING, STEALTH, SURVIVAL,
   TAUNT, THIEVERY];

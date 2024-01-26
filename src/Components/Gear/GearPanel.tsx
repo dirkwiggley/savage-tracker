@@ -1,4 +1,4 @@
-import { Box, Button,Divider, Paper, Snackbar, Stack, Tooltip, Typography, } from "@mui/material";
+import { Box, Button, Divider, Paper, Snackbar, Stack, Tooltip, Typography, } from "@mui/material";
 import MobileBox from "../MobileBox";
 import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
@@ -11,18 +11,20 @@ import UpPanel from "../UpPanel";
 import LockCharacterBtn from "../LockCharacterBtn";
 import NewGearNameDlg from "./NewGearNameDlg";
 import AddGearValueDlg from "./AddGearValueDlg";
+import StockGearDlg from "./StockGear";
 
 const NAME_STEP = "name_step";
 const EFFECT_STEP = "effect_step";
 const VALUE_STEP = "value_step";
 const UNKNOWN_STEP = "unknown_step";
-type stepType = typeof NAME_STEP | typeof EFFECT_STEP | typeof VALUE_STEP | typeof UNKNOWN_STEP; 
+type stepType = typeof NAME_STEP | typeof EFFECT_STEP | typeof VALUE_STEP | typeof UNKNOWN_STEP;
 
 const GearPanel = () => {
   const [char, setChar] = useContext(AppContext)!;
   const [openNewGearNameDlg, setOpenNewGearNameDlg] = useState<boolean>(false);
   const [openAddGearEffectDlg, setOpenAddGearEffectDlg] = useState<boolean>(false);
   const [openAddGearValueDlg, setOpenAddGearValueDlg] = useState<boolean>(false);
+  const [openStockGearDlg, setOpenStockGearDlg] = useState<boolean>(false);
   const [openSnackbar, setOpenSnackbar] = useState<boolean>(false);
   const [snackbarMsg, setSnackbarMsg] = useState<String | null>(null);
   const [currentStep, setCurrentStep] = useState<stepType>(UNKNOWN_STEP);
@@ -66,7 +68,7 @@ const GearPanel = () => {
   }
 
   const getMobile = () => {
-    const handleClickAdd = () => {
+    const handleClickCustom = () => {
       setCurrentStep(NAME_STEP);
     }
 
@@ -91,32 +93,23 @@ const GearPanel = () => {
       }
     }
 
-    const handleAddGear = (gear: GearType) => {
-      let hasGear: boolean = false;
-      char.gear.forEach(gear => {
-        if (gear.name === gear.name) {
-          hasGear = true;
-        }
-      });
-      if (hasGear) {
-        setSnackbarMsg(`You already have gear named ${gear.name}, please pick a new name.`);
-        setOpenSnackbar(true);
-      } else {
-        let newChar = {...char};
-        newChar.gear.push(gear);
-        setChar(newChar);
-      }
-    }
-
     const handleCloseGearValueDlg = (newGear: GearType | null = null) => {
       if (newGear) {
-        let newChar = {...char};
+        let newChar = { ...char };
         newChar.gear.push(newGear);
         setChar(newChar);
         setOpenAddGearValueDlg(false);
-      } 
+      }
       setCurrentStep(UNKNOWN_STEP);
       setGearEffectCfgs([]);
+    }
+
+    const handleOpenStockGearDlg = () => {
+      setOpenStockGearDlg(true);
+    }
+
+    const handleCloseStockGearDlg = () => {
+      setOpenStockGearDlg(false);
     }
 
     const toggleEquipGear = (gearName: string) => {
@@ -158,7 +151,7 @@ const GearPanel = () => {
       setSnackbarMsg(null);
       setOpenSnackbar(false);
     }
-  
+
     const getGear = () => {
       const gearArray: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
       if (char.gear) {
@@ -172,11 +165,11 @@ const GearPanel = () => {
       return <>{gearArray}</>;
     }
 
-    const getAddGearBtn = () => {
+    const getCustomGearBtn = () => {
       if (char.locked) return null;
       return (
         <Button
-          onClick={handleClickAdd}
+          onClick={handleClickCustom}
           variant="contained"
           style={{
             marginLeft: 5,
@@ -187,7 +180,27 @@ const GearPanel = () => {
             borderRadius: "15px 15px 15px 15px"
           }}
         >
-          <Typography variant="body2" fontWeight={900}>Add Gear</Typography>
+          <Typography variant="body2" fontWeight={900}>Custom Gear</Typography>
+        </Button>
+      );
+    }
+
+    const getStockGearBtn = () => {
+      if (char.locked) return null;
+      return (
+        <Button
+          onClick={handleOpenStockGearDlg}
+          variant="contained"
+          style={{
+            marginLeft: 5,
+            marginRight: 5,
+            marginTop: "10px",
+            backgroundColor: grey[300],
+            color: "black",
+            borderRadius: "15px 15px 15px 15px"
+          }}
+        >
+          <Typography variant="body2" fontWeight={900}>Stock Gear</Typography>
         </Button>
       );
     }
@@ -220,23 +233,30 @@ const GearPanel = () => {
     const getDialog = () => {
       switch (currentStep) {
         case NAME_STEP:
-          return <NewGearNameDlg 
-                  openDlg={openNewGearNameDlg} 
-                  closeDlg={handleCloseNewGearNameDlg} />
+          return <NewGearNameDlg
+            openDlg={openNewGearNameDlg}
+            closeDlg={handleCloseNewGearNameDlg} />
         case EFFECT_STEP:
-          return <AddGearEffectDlg 
-                  openDlg={openAddGearEffectDlg}
-                  gearEffectCfgs={gearEffectCfgs}
-                  closeDlg={handleCloseAddEffectDlg} />
+          return <AddGearEffectDlg
+            openDlg={openAddGearEffectDlg}
+            gearEffectCfgs={gearEffectCfgs}
+            closeDlg={handleCloseAddEffectDlg} />
         case VALUE_STEP:
-          return <AddGearValueDlg 
-                  openDlg={openAddGearValueDlg} 
-                  closeDlg={handleCloseGearValueDlg} 
-                  gearName={gearName ? gearName : ""} 
-                  gearEffectCfgs={gearEffectCfgs ? gearEffectCfgs : []} />
+          return <AddGearValueDlg
+            openDlg={openAddGearValueDlg}
+            closeDlg={handleCloseGearValueDlg}
+            gearName={gearName ? gearName : ""}
+            gearEffectCfgs={gearEffectCfgs ? gearEffectCfgs : []} />
         default:
           return null;
       }
+    }
+
+    const getStockGearDlg = () => {
+      if (openStockGearDlg)
+        return <StockGearDlg
+          openDlg={openStockGearDlg}
+          closeDlg={handleCloseStockGearDlg} />
     }
 
     return (
@@ -260,10 +280,12 @@ const GearPanel = () => {
               <Typography variant="h4" fontWeight={900}>Gear</Typography>
             </Box>
 
+            {getStockGearDlg()}
             {getDialog()}
             {getGear()}
 
-            {getAddGearBtn()}
+            {getStockGearBtn()}
+            {getCustomGearBtn()}
             {getRemoveGearBtn()}
             <LockCharacterBtn />
 

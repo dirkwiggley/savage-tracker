@@ -1,8 +1,11 @@
 import { useContext, useEffect, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
-import { Button, Dialog, DialogTitle, Snackbar, styled } from "@mui/material";
+import { Box, Button, Dialog, DialogTitle, Snackbar, Typography, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { AllAttackTypes, allGearEffectTypes, GearEffectConfig, GearEffectType, GearType, getWhenUsed, WhenType } from "../Gear/GearData";
+import { AllAttackTypes, allGearEffectTypes, COMBAT_AREA, COMBAT_MELEE, COMBAT_SHOOTING, COMBAT_THROWING, DiceType, GearEffectConfig, GearEffectType, GearType, getWhenUsed, WhenType } from "../Gear/GearData";
+import { ATHLETICS, FIGHTING, SHOOTING, SPELLCASTING, SkillNameType, UNKNOWN } from "../Skills/Skills";
+import { D4_MINUS2, DiceNameType, isDiceType } from "../Dice";
+import { isAttributeNameType } from "../Attributes/AttribPanel";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -29,6 +32,8 @@ const AttackDlg = (props: AttackDlgProps) => {
   const {openDlg, gearList, closeDlg} = props;
   const [char, setChar] = useContext(AppContext)!;
   const [gearSelected, setGearSelected] = useState<GearNameWhenType | null>();
+  const [attackRoll, setAttackRoll] = useState<string>("");
+  const [damageRoll, setDamageRoll] = useState<string>("");
 
   const getBtnColor = (gearNameWhenType: GearNameWhenType) => {
     if (gearNameWhenType.gearName === gearSelected?.gearName && gearNameWhenType.whenType === gearSelected.whenType) return grey[600];
@@ -74,22 +79,64 @@ const AttackDlg = (props: AttackDlgProps) => {
 
   const handleAttack = (gearNameWhenType: GearNameWhenType) => {
     setGearSelected(gearNameWhenType);
-    alert(gearSelected?.whenType);
+    const when = gearNameWhenType?.whenType;
+    let skillName: SkillNameType = UNKNOWN;
+    if (COMBAT_MELEE === when) {
+      skillName = FIGHTING;
+    } else if (COMBAT_SHOOTING === when) {
+      skillName = SHOOTING;
+    } else if (COMBAT_THROWING === when) {
+      skillName = ATHLETICS;
+    } else if (COMBAT_AREA === when) {
+      skillName = SPELLCASTING;
+    } 
+    let skillsDie = findCharSkillDie(skillName);
+    setAttackRoll(`Best of: ${skillsDie} (skill) or d6 (wild die)`);
+  }
+
+  const findCharSkillDie = (skillName: SkillNameType): DiceNameType => {
+    let skill = char.skills.find(skill => {
+      return skill.name === skillName;
+    });
+
+    let diceName: DiceNameType = D4_MINUS2
+    if (skill) {
+      diceName = skill.diceName;
+    }
+    return diceName;
   }
 
   const handleDamage = () => {
+    setAttackRoll("");
+    let displayValue = "";
+    gearSelected!.effectCfg.values.forEach(value => {
+      if (isDiceType(value)) {
+        displayValue = `${(value as DiceType).quantity}${(value as DiceType).diceName} ` + displayValue;
+      } else if (isAttributeNameType(value)) {
+        displayValue += ` + ${value}`;
+      } else if (typeof value === 'number' && value > 0) {
+        displayValue += " +" + value;
+      } else if (typeof value === 'number' && value < 0) {
+        displayValue += value;
+      }
+      setDamageRoll(displayValue);
+    });
     setGearSelected(null);
   }
 
   const handleCloseAttackDlg =  () => {
+    setAttackRoll("");
+    setDamageRoll("");
     closeDlg();
   }
   
-  const getSelectedGear = (): GearType | null => {
-    gearList.find(gear => {
-      if (gear.name === gearSelected?.gearName) return gear;
-    });
-    return null;
+  const getDisplayValue = (): string => {
+    if (attackRoll !== "") {
+      return attackRoll;
+    } else if (damageRoll !== "") {
+      return damageRoll;
+    } 
+    return "";
   }
 
   return (
@@ -98,6 +145,27 @@ const AttackDlg = (props: AttackDlgProps) => {
       <>
         {gearButtons}
       </>
+      <Box sx={{
+        maxWidth: "90%", 
+        border: "1px solid black", 
+        marginTop: 2, 
+        marginBottom: 1, 
+        marginLeft: 1, 
+        marginRight: 1,
+        paddingLeft: 1,
+        paddingRight: 1,
+        minHeight: "2em"}}>
+        <Typography
+          sx={{
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            display: "-webkit-box",
+            WebkitLineClamp: "2",
+            WebkitBoxOrient: "vertical"
+          }}>
+            {getDisplayValue()}
+        </Typography>
+      </Box>
       <StyledButton onClick={handleDamage} disabled={!gearSelected} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Show Damage</StyledButton>
       <StyledButton onClick={handleCloseAttackDlg} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
     </Dialog>

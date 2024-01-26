@@ -96,21 +96,29 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
   }, [currentEffectCfg]);
 
   const getAttributeButtons = useMemo(() => {
+    const existingAttributes: Array<AttributeNameType> = [];
+    currentEffectCfg.values.forEach(value => {
+      if (isAttributeNameType(value)) {
+        existingAttributes.push(value);
+      }
+    })
     const attribButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
     allAttributeNames.forEach((attribute, index) => {
-      attribButtons.push(
-        <StyledButton 
-          key={index} 
-          onClick={(e) => handleAddValue(attribute)} 
-          variant="contained" 
-          sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}
-        >
-          {attribute}
-        </StyledButton>
-      );
+      if (!existingAttributes.includes(attribute)) {
+        attribButtons.push(
+          <StyledButton 
+            key={index} 
+            onClick={(e) => handleAddValue(attribute)} 
+            variant="contained" 
+            sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}
+          >
+            {attribute}
+          </StyledButton>
+        );
+      }
     });
     return <>{attribButtons}</>;
-  }, []);
+  }, [currentEffectCfg]);
 
   const getDiceButtons = useMemo(() => {
     const diceButtons: Array<React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>> = [];
@@ -310,6 +318,8 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
     }
   }
 
+  // Sometimes we need to clear out all of the values
+  // for a given effect config
   const clearValues = () => {
     // Copy all of the gear effects
     let geCfgs = [...newGearEffectCfgs];
@@ -399,7 +409,7 @@ const AddGearValueDlg = (props: AddGearValueDlgProps) => {
       </Box>
       <StyledButton onClick={checkBeforeOpenClearDlg} sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>Clear Values</StyledButton>
       <StyledButton onClick={createGear} sx={{ marginTop: 1, marginLeft: 1, marginRight: 1 }}>Create Gear</StyledButton>
-      <StyledButton onClick={handleCloseAddGearValueDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
+      <StyledButton onClick={handleCloseAddGearValueDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Cancel</StyledButton>
     </Dialog>
   );
 }

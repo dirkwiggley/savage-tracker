@@ -74,7 +74,7 @@ const AddGearEffectDlg = (props: AddGearEffectProps) => {
         {effectButtons}
       </>
       <StyledButton onClick={handleNext} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Next</StyledButton>
-      <StyledButton onClick={handleCloseAddGearEffectDlg} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
+      <StyledButton onClick={handleCloseAddGearEffectDlg} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Cancel</StyledButton>
     </Dialog>
   );
 }

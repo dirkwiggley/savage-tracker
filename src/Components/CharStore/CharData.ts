@@ -75,7 +75,7 @@ export const getDefaultCharacter = (): CharDataType => {
       equipped: true
     },
     {
-      name: "Dagger", 
+      name: "Improvised Weapon", 
       effects: [
         { 
           typeName: GEAR_MELEE_DAMAGE, 
