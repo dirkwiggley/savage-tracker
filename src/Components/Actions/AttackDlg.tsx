@@ -100,7 +100,7 @@ const AttackDlg = (props: AttackDlgProps) => {
     }
     let skillsDie = findCharSkillDie(skillName);
     const modifiers = getAttackModifiers(gearNameWhenType);
-    if (modifiers && modifiers.length > 1 && modifiers[0].type === PREVENTS) {
+    if (modifiers && modifiers.length > 0 && modifiers[0].type === PREVENTS) {
       setAttackRoll(`Attack is not possible while under the ${modifiers[0].name} effect`);
     } else {
       let total: number = 0;
