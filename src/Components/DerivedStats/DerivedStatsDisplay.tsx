@@ -44,7 +44,7 @@ const DerivedStatsDisplay = (props: typeDerivedPropDisplayType) => {
 
   const getValueDisplay = () => {
     if (armor) {
-      return `${value} (${armor})`
+      return `${value}(${armor})`
     } else {
       return value
     }
