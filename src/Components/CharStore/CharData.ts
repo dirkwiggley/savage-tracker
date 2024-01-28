@@ -45,7 +45,7 @@ export const getDefaultCharacter = (): CharDataType => {
   newChar.derivedStats = [
     { name: PACE, value: 6 },
     { name: PARRY, value: 6 },
-    { name: TOUGHNESS, value: 6 },
+    { name: TOUGHNESS, value: 6, armor: 0 },
   ];
   newChar.tokens = [
     { name: HEALTH, value: 4 },

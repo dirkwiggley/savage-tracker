@@ -1,4 +1,5 @@
 import { AttributeNameType, isAttributeName } from "../Attributes/AttribPanel";
+import { CharDataType } from "../CharStore/CharData";
 import { DiceNameType } from "../Dice";
 
 export const COMBAT_MELEE = "Melee";
@@ -110,4 +111,45 @@ export const isValidGearEffectCfg = (gearEffectConfig: GearEffectConfig): boolea
   if (!gearEffectConfig.typeName || !(gearEffectConfig.typeName.length > 2)) return false;
   if (!gearEffectConfig.values || gearEffectConfig.values.length === 0) return false;
   return true;
+}
+
+export const getToughnessAndArmor = (char: CharDataType) => {
+  let toughness = 0;
+  let armor = 0;
+  if (char.gear && char.gear.length > 1) {
+    for (let i = 0; i < char.gear.length; i++) {
+      const gearEffect = char.gear[i];
+      if (gearEffect.equipped) {
+        for (let x = 0; x < gearEffect.effects.length; x++) {
+          let currentEffect = gearEffect.effects[x];
+          let value: number = currentEffect.values[0] as number;
+          if (currentEffect.typeName === GEAR_TOUGHNESS) {
+            toughness += value;
+          } else if (currentEffect.typeName === GEAR_ARMOR) {
+            armor += value;
+          }
+        }
+      }
+    }
+  }
+  return { toughness: toughness, armor: armor };
+}
+
+export const getArmor = (char: CharDataType) => {
+  let armor = 0;
+  if (char.gear && char.gear.length > 1) {
+    for (let i = 0; i < char.gear.length; i++) {
+      const gearEffect = char.gear[i];
+      if (gearEffect.equipped) {
+        for (let x = 0; x < gearEffect.effects.length; x++) {
+          let currentEffect = gearEffect.effects[x];
+          let value: number = currentEffect.values[0] as number;
+          if (currentEffect.typeName === GEAR_ARMOR) {
+            armor += value;
+          }
+        }
+      }
+    }
+  }
+  return armor;
 }

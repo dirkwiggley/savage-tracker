@@ -14,6 +14,7 @@ export type DerivedStatNames = typeof PACE | typeof PARRY | typeof TOUGHNESS;
 export type DerivedStatTypes = {
   name: DerivedStatNames,
   value: number,
+  armor?: number,
   modifier?: number
 }
 
@@ -24,7 +25,7 @@ export interface typeDerivedPropDisplayType extends DerivedStatTypes {
 }
 
 const DerivedStatsDisplay = (props: typeDerivedPropDisplayType) => {
-  const { name, value, locked, incStat, decStat } = props;
+  const { name, value, armor, locked, incStat, decStat } = props;
 
   const getBtns = () => {
     if (!locked) {
@@ -41,13 +42,21 @@ const DerivedStatsDisplay = (props: typeDerivedPropDisplayType) => {
     }
   }
 
+  const getValueDisplay = () => {
+    if (armor) {
+      return `${value} (${armor})`
+    } else {
+      return value
+    }
+  }
+
   return (
     <div style={{display: "flex", marginTop: 5}}>
       <Box bgcolor={"white"} boxShadow={3} style={{border: "1px solid black", display: "flex", justifyContent: "center", alignItems: "center", padding: 5, width: "75px" }}>
         <Typography style={{ textAlign: "center" }}>{name}</Typography>
       </Box>
       <Box bgcolor={"white"} boxShadow={3} style={{border: "1px solid black", display: "flex", justifyContent: "center", alignItems: "center", padding: 5, width: "45px" }}>
-        <Typography style={{ textAlign: "center" }}>{value}</Typography>
+        <Typography style={{ textAlign: "center" }}>{getValueDisplay()}</Typography>
       </Box>
       {getBtns()}
     </div>

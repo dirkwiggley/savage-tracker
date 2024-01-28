@@ -14,6 +14,7 @@ import { CharDataType } from "../CharStore/CharData";
 import DownPanel from "../DownPanel";
 import UpPanel from "../UpPanel";
 import LockCharacterBtn from "../LockCharacterBtn";
+import { GEAR_ARMOR, GEAR_TOUGHNESS, getArmor, getToughnessAndArmor } from "../Gear/GearData";
 
 const DerivedStatsPanel = () => {
   const [char, setChar] = useContext(AppContext)!;
@@ -49,15 +50,15 @@ const DerivedStatsPanel = () => {
     return 2 + modifier;
   }
 
-  // TODO:
   const calcToughness = (): number => {
     const vigor = char.attributes.find(attr => attr.name === VIG);
     const toughness = char.derivedStats.find(stat => stat.name === TOUGHNESS);
     let modifier = toughness!.modifier ? toughness!.modifier : 0;
+    const gearToughnessAndArmor = getToughnessAndArmor(char);
     if (vigor) {
       const vigorValue = findDiceNumberValue(vigor.diceName);
       let value = Math.round(vigorValue / 2) + 2;
-      return value + modifier;
+      return value + modifier + gearToughnessAndArmor.toughness + gearToughnessAndArmor.armor;
     }
     return -1;
   }
@@ -109,7 +110,7 @@ const DerivedStatsPanel = () => {
               <DerivedStatsDisplay name={PARRY} value={calcParry()} locked={char.locked} incStat={() => incStat(PARRY)} decStat={() => decStat(PARRY)} />
             </div>
             <div style={{ marginLeft: 5 }}>
-              <DerivedStatsDisplay name={TOUGHNESS} value={calcToughness()} locked={char.locked} incStat={() => incStat(TOUGHNESS)} decStat={() => decStat(TOUGHNESS)} />
+              <DerivedStatsDisplay name={TOUGHNESS} value={calcToughness()} armor={getArmor(char)} locked={char.locked} incStat={() => incStat(TOUGHNESS)} decStat={() => decStat(TOUGHNESS)} />
             </div>
 
             <LockCharacterBtn />
