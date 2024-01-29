@@ -137,7 +137,7 @@ export const getToughnessAndArmor = (char: CharDataType) => {
 
 export const getArmor = (char: CharDataType) => {
   let armor = 0;
-  if (char.gear && char.gear.length > 1) {
+  if (char.gear && char.gear.length > 0) {
     for (let i = 0; i < char.gear.length; i++) {
       const gearEffect = char.gear[i];
       if (gearEffect.equipped) {
@@ -152,4 +152,23 @@ export const getArmor = (char: CharDataType) => {
     }
   }
   return armor;
+}
+
+export const getShield = (char: CharDataType) => {
+  let shield = 0;
+  if (char.gear && char.gear.length > 0) {
+    for (let i = 0; i < char.gear.length; i++) {
+      const gearEffect = char.gear[i];
+      if (gearEffect.equipped) {
+        for (let x = 0; x < gearEffect.effects.length; x++) {
+          let currentEffect = gearEffect.effects[x];
+          let value: number = currentEffect.values[0] as number;
+          if (currentEffect.typeName === GEAR_PARRY) {
+            shield += value;
+          }
+        }
+      }
+    }
+  }
+  return shield;
 }

@@ -7,6 +7,7 @@ import { ATHLETICS, FIGHTING, SHOOTING, SPELLCASTING, SkillNameType, UNKNOWN } f
 import { D4_MINUS2, DiceNameType, isDiceType } from "../Dice";
 import { isAttributeNameType } from "../Attributes/AttribPanel";
 import { BONUS, EffectType, PENALTY, PREVENTS } from "../Effects/Effects";
+import { AttributeNameType } from "./ActionsPanel";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -156,6 +157,13 @@ const AttackDlg = (props: AttackDlgProps) => {
     return charEffects;
   }
 
+const getAttributeDice = (attributeName: AttributeNameType) => {
+  let selectedAttribute = char.attributes.find(attribute => {
+    return attribute.name === attributeName;
+  });
+  return selectedAttribute?.diceName;
+}
+
 const handleDamage = () => {
   setAttackRoll("");
   let displayValue = "";
@@ -163,7 +171,7 @@ const handleDamage = () => {
     if (isDiceType(value)) {
       displayValue = `${(value as DiceType).quantity}${(value as DiceType).diceName} ` + displayValue;
     } else if (isAttributeNameType(value)) {
-      displayValue += ` + ${value}`;
+      displayValue += ` + ${getAttributeDice(value)} (${value})`;
     } else if (typeof value === 'number' && value > 0) {
       displayValue += " +" + value;
     } else if (typeof value === 'number' && value < 0) {

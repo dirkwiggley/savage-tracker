@@ -1,5 +1,4 @@
-import { useNavigate } from "react-router-dom";
-import { Box, Button, Divider, IconButton, Paper, Stack, Tooltip, Typography } from "@mui/material";
+import { Box, Divider, Paper, Stack, Typography } from "@mui/material";
 import MobileBox from "../MobileBox";
 import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
@@ -14,7 +13,7 @@ import { CharDataType } from "../CharStore/CharData";
 import DownPanel from "../DownPanel";
 import UpPanel from "../UpPanel";
 import LockCharacterBtn from "../LockCharacterBtn";
-import { GEAR_ARMOR, GEAR_TOUGHNESS, getArmor, getToughnessAndArmor } from "../Gear/GearData";
+import { getArmor, getShield, getToughnessAndArmor } from "../Gear/GearData";
 
 const DerivedStatsPanel = () => {
   const [char, setChar] = useContext(AppContext)!;
@@ -107,7 +106,7 @@ const DerivedStatsPanel = () => {
               <DerivedStatsDisplay name={PACE} value={calcPace()} locked={char.locked} incStat={() => incStat(PACE)} decStat={() => decStat(PACE)} />
             </div>
             <div style={{ marginLeft: 5 }}>
-              <DerivedStatsDisplay name={PARRY} value={calcParry()} locked={char.locked} incStat={() => incStat(PARRY)} decStat={() => decStat(PARRY)} />
+              <DerivedStatsDisplay name={PARRY} value={calcParry()} shield={getShield(char)} locked={char.locked} incStat={() => incStat(PARRY)} decStat={() => decStat(PARRY)} />
             </div>
             <div style={{ marginLeft: 5 }}>
               <DerivedStatsDisplay name={TOUGHNESS} value={calcToughness()} armor={getArmor(char)} locked={char.locked} incStat={() => incStat(TOUGHNESS)} decStat={() => decStat(TOUGHNESS)} />
