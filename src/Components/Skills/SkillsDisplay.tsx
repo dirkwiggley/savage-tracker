@@ -1,9 +1,7 @@
-import {D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2, DiceNameType, Dice_Id_Range, DiceInfoType, diceInfo} from '../Dice';
+import {DiceNameType} from '../Dice';
 import { Box, Typography } from '@mui/material';
 
-import {ATHLETICS, COMMON_KNOWLEDGE, FAITH, FIGHTING, GAMBLING, HEALING, INTIMIDATION, NOTICE, OCCULT, PERFORMANCE, 
-  PERSUASION, REPAIR, RESEARCH, RIDING, SCIENCE, SHOOTING, SPELLCASTING, STEALTH, SURVIVAL, TAUNT, THIEVERY, SkillNameType,
-  allSkillNames, SkillInfoType} from './Skills';
+import {SkillNameType} from './Skills';
 
 export type SkillPropTypes = {
   name: SkillNameType,

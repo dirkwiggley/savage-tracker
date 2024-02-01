@@ -164,7 +164,11 @@ const getAttributeDice = (attributeName: AttributeNameType) => {
   return selectedAttribute?.diceName;
 }
 
-const handleDamage = () => {
+const handleCritDamage = () => {
+  handleDamage(true);
+}
+
+const handleDamage = (crit: boolean = false) => {
   setAttackRoll("");
   let displayValue = "";
   gearSelected!.effectCfg.values.forEach(value => {
@@ -176,9 +180,12 @@ const handleDamage = () => {
       displayValue += " +" + value;
     } else if (typeof value === 'number' && value < 0) {
       displayValue += value;
-    }
-    setDamageRoll(displayValue);
+    } 
   });
+  if (crit) {
+    displayValue += " + d6 (crit bonus)";
+  }
+  setDamageRoll(displayValue);
   setGearSelected(null);
 }
 
@@ -225,7 +232,8 @@ return (
         {getDisplayValue()}
       </Typography>
     </Box>
-    <StyledButton onClick={handleDamage} disabled={!gearSelected} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Show Damage</StyledButton>
+    <StyledButton onClick={() => handleDamage()} disabled={!gearSelected} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Show Damage</StyledButton>
+    <StyledButton onClick={handleCritDamage} disabled={!gearSelected} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Show Crit Damage</StyledButton>
     <StyledButton onClick={handleCloseAttackDlg} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
   </Dialog>
 );

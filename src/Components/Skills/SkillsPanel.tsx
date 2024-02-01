@@ -1,4 +1,3 @@
-import { useNavigate } from "react-router-dom";
 import { Box, Button, Dialog, DialogTitle, Divider, IconButton, Paper, Stack, Typography } from "@mui/material";
 import AddCircleTwoToneIcon from '@mui/icons-material/AddCircleTwoTone';
 import RemoveCircleTwoToneIcon from '@mui/icons-material/RemoveCircleTwoTone';
@@ -6,17 +5,27 @@ import { styled } from '@mui/material/styles';
 import MobileBox from "../MobileBox";
 import NonMobileBox from "../NonMobilebox";
 import { grey } from "@mui/material/colors";
-import { D4_MINUS2, D4_MINUS1, D4, D6, D8, D10, D12, D12_PLUS1, D12_PLUS2, DiceNameType, Dice_Id_Range, DiceInfoType, diceInfo, incDice, decDice } from '../Dice';
-import { ATHLETICS, FIGHTING, SHOOTING, SkillNameType, allSkillNames } from "./Skills";
+import { incDice, decDice, D4 } from '../Dice';
+import { SkillNameType, allSkillNames } from "./Skills";
 import SkillDisplay from './SkillsDisplay';
 import { useContext, useEffect, useState } from "react";
-import { CHAR_DATA, CharDataType } from "../CharStore/CharData";
+import { CharDataType } from "../CharStore/CharData";
 import { AppContext } from "../AppContextProvider";
 import DownPanel from "../DownPanel";
 import UpPanel from "../UpPanel";
 import LockCharacterBtn from "../LockCharacterBtn";
 
 const StyledButton = styled(Button)(({ theme }) => ({
+  color: "black",
+  backgroundColor: grey[400],
+  borderRadius: 25,
+  '&:hover': {
+    backgroundColor: grey[500],
+  }
+}));
+
+const StyledCloseButton = styled(Button)(({ theme }) => ({
+  maxWidth: "45%",
   color: "black",
   backgroundColor: grey[400],
   borderRadius: 25,
@@ -33,8 +42,6 @@ const SkillsPanel = () => {
   const [openModDlg, setOpenModDlg] = useState<boolean>(false);
   const [modSkill, setModSkill] = useState<SkillNameType | null | undefined>();
   const [openRemoveSkillDlg, setOpenRemoveSkillDlg] = useState<boolean>(false);
-
-  let navigate = useNavigate();
 
   useEffect(() => {
     let newChar = { ...char } as CharDataType;
@@ -54,7 +61,7 @@ const SkillsPanel = () => {
       if (char.locked) {
         skills.push(
           <div key={skill.name} style={{ marginLeft: 5 }}>
-            <SkillDisplay name={skill.name} diceName={skill.diceName} clickHandler={() => { }} />
+            <SkillDisplay name={skill.name} diceName={skill.diceName} clickHandler={() => {}} />
           </div>
         )
       } else {
@@ -164,7 +171,7 @@ const SkillsPanel = () => {
         <>
           {skillButtons}
         </>
-        <StyledButton onClick={handleCloseAddSkillDlg} sx={{ marginTop: 1, marginBottom: 1 }}>Close</StyledButton>
+        <StyledButton variant="contained" onClick={handleCloseAddSkillDlg} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Close</StyledButton>
       </Dialog>
     );
   }
@@ -195,7 +202,7 @@ const SkillsPanel = () => {
           </IconButton>
         </div>
 
-        <StyledButton onClick={handleCloseModDlg} sx={{ marginTop: 1, marginBottom: 1 }}>Close</StyledButton>
+        <StyledCloseButton onClick={handleCloseModDlg} sx={{ marginTop: 1, marginBottom: 1 }}>Close</StyledCloseButton>
       </Dialog>
     );
   }
