@@ -45,6 +45,21 @@ const AddCounterDlg = (props: AddCounterDlgType) => {
         </Box>
       </div>
       <div style={{ display: "flex" }}>
+      <Button
+          onClick={decCounter}
+          variant="contained"
+          disabled={counter === 0}
+          style={{
+            marginLeft: 3,
+            marginRight: 5,
+            backgroundColor: grey[300],
+            color: "black",
+            borderRadius: "15px 0 0 15px",
+            width: "49%",
+            boxShadow: "3"
+          }}>
+          <RemoveCircleTwoToneIcon fontSize="large" />
+        </Button>
         <Button
           onClick={incCounter}
           variant="contained"
@@ -54,26 +69,11 @@ const AddCounterDlg = (props: AddCounterDlgType) => {
             backgroundColor:
               grey[300],
             color: "black",
-            borderRadius: "15px 0 0 15px",
-            width: "49%",
-            boxShadow: "3"
-          }}>
-          <AddCircleTwoToneIcon fontSize="large" />
-        </Button>
-        <Button
-          onClick={decCounter}
-          variant="contained"
-          disabled={counter === 0}
-          style={{
-            marginLeft: 3,
-            marginRight: 5,
-            backgroundColor: grey[300],
-            color: "black",
             borderRadius: "0 15px 15px 0",
             width: "49%",
             boxShadow: "3"
           }}>
-          <RemoveCircleTwoToneIcon fontSize="large" />
+          <AddCircleTwoToneIcon fontSize="large" />
         </Button>
       </div>
 

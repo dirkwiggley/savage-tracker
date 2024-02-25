@@ -2,7 +2,7 @@ import { useContext, useMemo, useState } from "react";
 import { AppContext } from "../AppContextProvider";
 import { Button, Dialog, DialogTitle, Snackbar, styled } from "@mui/material";
 import { grey } from "@mui/material/colors";
-import { allGearEffectTypes, GearEffectConfig, GearEffectType, getWhenUsed } from "./GearData";
+import { allGearEffectTypes, GearEffectConfig, GearEffectType } from "./GearData";
 
 const StyledButton = styled(Button)(({ theme }) => ({
   color: "black",
@@ -67,13 +67,16 @@ const AddGearEffectDlg = (props: AddGearEffectProps) => {
     closeDlg();
   }
   
+  const isNextDisabled = () => {
+    return (!newGearEffectCfgs || newGearEffectCfgs.length === 0);
+  }
   return (
     <Dialog onClose={handleCloseAddGearEffectDlg} open={openDlg}>
       <DialogTitle style={{ marginTop: -10, marginBottom: -20 }}>Pick Effect to add</DialogTitle>
       <>
         {effectButtons}
       </>
-      <StyledButton onClick={handleNext} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Next</StyledButton>
+      <StyledButton disabled={isNextDisabled()} onClick={handleNext} sx={{ marginTop: 1, marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Next</StyledButton>
       <StyledButton onClick={handleCloseAddGearEffectDlg} sx={{ marginBottom: 1, marginLeft: 1, marginRight: 1 }}>Cancel</StyledButton>
     </Dialog>
   );

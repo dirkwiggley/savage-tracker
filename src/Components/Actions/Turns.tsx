@@ -23,11 +23,11 @@ const Turns = (props: TurnPropType) => {
 
         </div>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <IconButton onClick={incTurnCounter} >
-            <AddCircleTwoToneIcon fontSize="large" />
-          </IconButton>
           <IconButton onClick={decTurnCounter} >
             <RemoveCircleTwoToneIcon fontSize="large" />
+          </IconButton>
+          <IconButton onClick={incTurnCounter} >
+            <AddCircleTwoToneIcon fontSize="large" />
           </IconButton>
         </div>
       </Paper>

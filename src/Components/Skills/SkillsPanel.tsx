@@ -194,15 +194,17 @@ const SkillsPanel = () => {
       <Dialog onClose={handleCloseModDlg} open={openModDlg}>
         <DialogTitle style={{ marginTop: -10, marginBottom: -20 }}>{modSkill} {diceName}</DialogTitle>
         <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <IconButton onClick={() => incSkill(skillName!)}>
-            <AddCircleTwoToneIcon fontSize="large" />
-          </IconButton>
           <IconButton onClick={() => decSkill(skillName!)}>
             <RemoveCircleTwoToneIcon fontSize="large" />
           </IconButton>
+          <IconButton onClick={() => incSkill(skillName!)}>
+            <AddCircleTwoToneIcon fontSize="large" />
+          </IconButton>
         </div>
 
-        <StyledCloseButton onClick={handleCloseModDlg} sx={{ marginTop: 1, marginBottom: 1 }}>Close</StyledCloseButton>
+        <div style={{ display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <StyledCloseButton onClick={handleCloseModDlg} sx={{ marginTop: 1, marginBottom: 1 }}>Close</StyledCloseButton>
+        </div>
       </Dialog>
     );
   }

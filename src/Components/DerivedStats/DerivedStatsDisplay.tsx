@@ -38,11 +38,11 @@ const DerivedStatsDisplay = (props: typeDerivedPropDisplayType) => {
     if (!locked) {
       return (
         <>
-          <Button onClick={() => incStat(name)} variant="contained" style={{ marginLeft: 5, backgroundColor: grey[300], color: "black", borderRadius: "15px 0 0 15px" }}>
-            <AddCircleTwoToneIcon fontSize="large" />
-          </Button>
-          <Button onClick={() => decStat(name)} variant="contained" style={{ marginLeft: 5, backgroundColor: grey[300], color: "black", borderRadius: "0 15px 15px 0" }}>
+          <Button onClick={() => decStat(name)} variant="contained" style={{ marginLeft: 5, backgroundColor: grey[300], color: "black", borderRadius: "15px 0 0 15px" }}>
             <RemoveCircleTwoToneIcon fontSize="large" />
+          </Button>
+          <Button onClick={() => incStat(name)} variant="contained" style={{ marginLeft: 5, backgroundColor: grey[300], color: "black", borderRadius: "0 15px 15px 0" }}>
+            <AddCircleTwoToneIcon fontSize="large" />
           </Button>
         </>
       );
